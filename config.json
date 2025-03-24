@@ -1,0 +1,28 @@
+{
+    "version": "2024.1",
+    "name": "Upcloudvps.name",
+    "description": "Upcloudvps.description",
+    "authors": [
+        {
+            "name": "WHMCSModule Networks",
+            "url": "http://www.whmcsmodule.net"
+        }
+    ],
+    "logo": "views/default/images/logo.svg",
+    "package": {
+        "name_key": "upcloudvps_hostname"
+    },
+    "service": {
+        "name_key": "upcloudvps_hostname"
+    },
+    "module": {
+        "row": "Upcloudvps.module_row",
+        "rows": "Upcloudvps.module_row_plural",
+        "row_key": "account_name"
+    },
+    "email_tags": {
+      "module": ["server_name", "host_name"],
+      "package": ["server_type"],
+      "service": ["upcloudvps_hostname", "upcloudvps_password", "upcloudvps_ipaddress"]
+    }
+}

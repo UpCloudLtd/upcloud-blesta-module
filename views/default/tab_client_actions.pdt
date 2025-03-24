@@ -1,0 +1,257 @@
+    <h4><?php $this->_('Upcloudvps.tab_client_actions.heading_status'); ?></h4>
+
+    <?php
+
+    if (($server_details['state'] ?? null) == 'started' && isset($server_details['host'])) {
+        $status_class = 'success';
+        $status = 'online';
+    } else {
+        $status_class = 'danger';
+        $status = 'offline';
+    }
+    ?>
+
+    <div id="upcloudvps_status_badge">
+        <span class="badge badge-<?php echo (isset($status_class) ? $this->Html->safe($status_class) : null); ?> mb-3">
+            <i class="fas fa-lightbulb"></i> <?php $this->_('Upcloudvps.tab_client_actions.status_' . (isset($status) ? $this->Html->safe($status) : null)); ?>
+        </span>
+    </div>
+
+    <h4><?php $this->_('Upcloudvps.tab_client_actions.heading_actions'); ?></h4>
+    <div class="row options" id="upcloudvps_actions">
+        <div class="col-md-4">
+            <?php
+            $this->Form->create();
+            $this->Form->fieldHidden('action', 'restart');
+            ?>
+            <button<?php echo ($status ?? null) == 'offline' ? ' disabled="disabled"' : ''; ?> class="btn btn-block btn-success">
+                <i class="fas fa-sync-alt"></i> <?php $this->_('Upcloudvps.tab_client_actions.action_restart'); ?>
+            </button>
+            <?php
+            $this->Form->end();
+            ?>
+            <a href="#" class="change_ptr btn btn-light btn-block" style="margin-top: 10px;">
+                <i class="fas fa-server"></i> <?php $this->_('Upcloudvps.tab_client_actions.action_change_ptr'); ?>
+            </a>
+
+        </div>
+        <div class="col-md-4">
+            <?php
+            $this->Form->create();
+            $this->Form->fieldHidden('action', 'stop');
+            ?>
+            <button<?php echo ($status ?? null) == 'offline' ? ' disabled="disabled"' : ''; ?> class="btn btn-block btn-danger">
+                <i class="fas fa-stop"></i> <?php $this->_('Upcloudvps.tab_client_actions.action_stop'); ?>
+            </button>
+            <?php
+            $this->Form->end();
+            ?>
+
+            <?php
+            $this->Form->create();
+            if($server_details['remote_access_enabled'] == "no"){
+            $this->Form->fieldHidden('action', 'enblvnc');
+          } else {
+            $this->Form->fieldHidden('action', 'disblvnc');
+          }
+          if($server_details['remote_access_enabled'] == "no"){
+            ?>
+
+            <button<?php echo ($status ?? null) == 'offline' ? ' disabled="disabled"' : ''; ?> class="btn btn-block btn-success" style="margin-top: 10px;">
+                <i class="fas fa-terminal"></i> <?php $this->_('Upcloudvps.service_field.enable_vnc'); ?>
+            </button>
+          <?php } else {?>
+
+            <button<?php echo ($status ?? null) == 'offline' ? ' disabled="disabled"' : ''; ?> class="btn btn-block btn-danger" style="margin-top: 10px;">
+                <i class="fas fa-terminal"></i> <?php $this->_('Upcloudvps.service_field.disable_vnc'); ?>
+            </button>
+
+            <?php  }
+            $this->Form->end();
+            ?>
+
+
+        </div>
+        <div class="col-md-4">
+            <?php
+            $this->Form->create();
+            $this->Form->fieldHidden('action', 'start');
+            ?>
+            <button<?php echo ($status ?? null) == 'online' ? ' disabled="disabled"' : ''; ?> class="btn btn-light btn-block">
+                <i class="fas fa-play"></i> <?php $this->_('Upcloudvps.tab_client_actions.action_start'); ?>
+            </button>
+            <?php
+            $this->Form->end();
+            ?>
+
+            <?php
+            if($server_details['remote_access_enabled'] != "no"){
+            $this->Form->create();
+            $this->Form->fieldHidden('action', 'changepassword');
+            ?>
+            <button<?php echo ($status ?? null) == 'offline' ? ' disabled="disabled"' : '';?> class="btn btn-light btn-block" style="margin-top: 10px;">
+                <i class="fas fa-key"></i> <?php $this->_('Upcloudvps.tab_actions.action_changepassword'); ?>
+            </button>
+            <?php
+            $this->Form->end();
+          }
+            ?>
+        </div>
+    </div>
+
+    <div class="clearfix"></div>
+    <div id="change_ptr" style="display:none;">
+        <hr>
+        <h4><?php $this->_('Upcloudvps.tab_client_actions.heading_change_ptr'); ?></h4>
+        <div class="row">
+            <?php
+            $this->Form->create();
+            $this->Form->fieldHidden('action', 'change_ptr'); ?>
+            <div class="col-md-12">
+
+              <div class="form-group">
+                  <?php
+                  $this->Form->label($this->_('Upcloudvps.stats.ip', true), 'ip');
+                  $this->Form->fieldSelect('ip', (isset($ipaddress) ? $ipaddress : null), ['id' => 'ip']);
+                  ?>
+              </div>
+
+                <div class="form-group">
+                    <?php
+                    $this->Form->label($this->_('Upcloudvps.tab_client_actions.field_ptr', true), 'ptr');
+                    $this->Form->fieldText('ptr', '', ['id' => 'ptr', 'class' => 'form-control']);
+                    ?>
+                </div>
+
+                <button class="btn btn-light float-right">
+                    <i class="fas fa-server"></i> <?php $this->_('Upcloudvps.tab_client_actions.action_change_ptr'); ?>
+                </button>
+            </div>
+            <?php
+            $this->Form->end(); ?>
+        </div>
+    </div>
+    <br />
+
+
+        <h4><?php $this->_('Upcloudvps.stats.server_information'); ?></h4>
+
+        <div class="table-responsive">
+            <table class="table table-curved table-striped">
+            <thead>
+                <tr class="heading_row">
+                    <td style="width: 50%;"><?php $this->_('Upcloudvps.stats.info_heading.field'); ?></td>
+                    <td class="last"><?php $this->_('Upcloudvps.stats.info_heading.value'); ?></td>
+                </tr>
+            </thead>
+            <tbody>
+                <?php
+                $infos = ['limit', 'used', 'percentage', 'ipaddv4', 'ipaddv6', 'user', 'hostname', 'osname', 'memory_amount', 'space_gb', 'core_number', 'zoneDescription', 'rootpassword', 'remote_access_host', 'remote_access_port', 'remote_access_password'];
+                $i = 1;
+                foreach ($server_details as $key => $value) {
+                    if (in_array($key, $infos)) {
+                        ?>
+                    <tr<?php echo $this->Html->concat(' ', ($i % 2 == 1) ? ' class="odd_row"' : '', ''); ?>>
+                        <td><?php $this->_('Upcloudvps.stats.info.' . $key); ?></td>
+                        <td><?php echo (isset($value) ? $this->Html->safe($value) : null); ?></td>
+                    </tr>
+                    <?php
+                        $i++;
+                    }
+                }
+                ?>
+                <tr class="odd_row">
+                    <td><?php $this->_('Upcloudvps.stats.info.Bandwidth'); ?></td>
+                    <td><?php echo (isset($server_details['Bandwidth']) ? $server_details['Bandwidth'] : null); ?></td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+    <br />
+
+        <h4><?php $this->_('Upcloudvps.stats.interface_information'); ?></h4>
+
+        <div class="table-responsive">
+            <table class="table table-curved table-striped">
+            <thead>
+                <tr class="heading_row">
+                    <td style="width: 33%;"><?php $this->_('Upcloudvps.stats.ip'); ?></td>
+                    <td style="width: 33%;"><?php $this->_('Upcloudvps.stats.type'); ?></td>
+                    <td class="last"><?php $this->_('Upcloudvps.stats.mac'); ?></td>
+                    <td class="last"><?php $this->_('Upcloudvps.stats.type'); ?></td>
+                    <td class="last"><?php $this->_('Upcloudvps.stats.ptr'); ?></td>
+                </tr>
+            </thead>
+            <tbody>
+            <?php
+
+            foreach ($server_details['networking']['interfaces']['interface'] as $ip) {
+                    ?>
+                    <tr>
+                    <td><?php echo (isset($ip['ip_addresses']['ip_address'][0]['address']) ? $this->Html->safe($ip['ip_addresses']['ip_address'][0]['address']) : null); ?></td>
+                    <td><?php echo (isset($ip['type']) ? $this->Html->safe(ucfirst($ip['type'])) : null); ?></td>
+                    <td><?php echo (isset($ip['mac']) ? $this->Html->safe($ip['mac']) : null); ?></td>
+                    <td><?php echo (isset($ip['ip_addresses']['ip_address'][0]['family']) ? $this->Html->safe($ip['ip_addresses']['ip_address'][0]['family']) : null); ?></td>
+                    <td><?php echo (isset($ip['ptr']) ? $this->Html->safe($ip['ptr']) : null); ?></td>
+                    </tr>
+                    <?php
+                }
+                ?>
+            </tbody>
+        </table>
+    </div>
+
+    <script type="text/javascript">
+        $(document).ready(function() {
+            //setUpcloudvpsInterval('3600', '');
+            <?php
+            if ((isset($vars->hostname) ? $vars->hostname : false)) {
+                ?>
+            showSection('change_ptr');
+            <?php
+            }
+            ?>
+
+            $('.options').on('click', 'a.change_ptr', function(e) {
+                var item_class = "change_ptr";
+
+                hideSections();
+                showSection(item_class);
+            });
+
+            function hideSections() {
+                $('#change_ptr').hide();
+            }
+
+
+            function showSection(id) {
+                $('#' + id).show();
+            }
+
+            function setUpcloudvpsInterval(refresh_rate, old_action_data) {
+                var interval = setInterval(function() {
+                    $(this).blestaRequest("GET",
+                        '<?php echo $this->base_uri . 'services/manage/' . (isset($service->id) ? $service->id : null) . '/tabClientActions/';?>',
+                        null,
+                        // Success response
+                        function(data) {
+                            if (data.replacer && data.content) {
+                                var badge_html = $('div', data.content).filter('#upcloudvps_status_badge').html();
+                                $('#upcloudvps_status_badge').html(badge_html);
+
+                                var html = $('div', data.content).filter('#upcloudvps_actions').html();
+                                $('#upcloudvps_actions').html(html);
+
+                                refresh_rate = '3600';
+
+                                clearInterval(interval);
+                                setUpcloudvpsInterval(refresh_rate, html);
+                            }
+                        },
+                        null,
+                        {dataType: 'json'}
+                    );
+                }, refresh_rate);
+            }
+        });
+    </script>
