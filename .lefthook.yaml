@@ -1,0 +1,12 @@
+min_version: 1.10.10
+
+pre-commit:
+  jobs:
+    - name: phpcbf
+      glob:
+        - "*.php"
+        - "*.pdt"
+      exclude:
+        - vendor/*
+      run: |
+        vendor/bin/phpcbf {staged_files}
