@@ -1,4 +1,5 @@
 <?php
+
 $lang['Upcloudvps.name'] = 'upCloud VPS';
 $lang['Upcloudvps.tab_actions'] = 'Actions';
 $lang['Upcloudvps.tab_stats'] = 'Statistics';
