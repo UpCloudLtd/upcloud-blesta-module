@@ -1,46 +1,46 @@
-        <?php
-        $this->Widget->clear();
-        $this->Widget->create($this->_('Upcloudvps.add_row.box_title', true));
-        ?>
-        <div class="inner">
-            <?php
-            $this->Form->create();
-            ?>
-            <div class="title_row first">
-                <h3><?php $this->_('Upcloudvps.add_row.basic_title'); ?></h3>
-            </div>
-            <div class="pad">
-                <ul>
-                    <li>
-                        <?php
-                        $this->Form->label($this->_('Upcloudvps.row_meta.account_name', true), 'account_name');
-                        $this->Form->fieldText('account_name', (isset($vars->account_name) ? $vars->account_name : null));
-                        ?>
-                    </li>
-                    <li>
-                        <?php
-                        $this->Form->label($this->_('Upcloudvps.row_meta.user_key', true), 'user_key');
-                        $this->Form->fieldText('user_key', (isset($vars->user_key) ? $vars->user_key : null));
-                        ?>
-                    </li>
-                    <li>
-                        <?php
-                        $this->Form->label($this->_('Upcloudvps.row_meta.pass_key', true), 'pass_key');
-                        $this->Form->fieldText('pass_key', (isset($vars->pass_key) ? $vars->pass_key : null));
-                        ?>
-                    </li>
-                </ul>
-            </div>
-
-            <div class="button_row">
+<?php
+$this->Widget->clear();
+$this->Widget->create($this->_('Upcloudvps.add_row.box_title', true));
+?>
+<div class="inner">
+    <?php
+    $this->Form->create();
+    ?>
+    <div class="title_row first">
+        <h3><?php $this->_('Upcloudvps.add_row.basic_title'); ?></h3>
+    </div>
+    <div class="pad">
+        <ul>
+            <li>
                 <?php
-                $this->Form->fieldSubmit('save', $this->_('Upcloudvps.add_row.add_btn', true), ['class' => 'btn btn-primary pull-right']);
+                $this->Form->label($this->_('Upcloudvps.row_meta.account_name', true), 'account_name');
+                $this->Form->fieldText('account_name', (isset($vars->account_name) ? $vars->account_name : null));
                 ?>
-            </div>
-            <?php
-            $this->Form->end();
-            ?>
-        </div>
+            </li>
+            <li>
+                <?php
+                $this->Form->label($this->_('Upcloudvps.row_meta.user_key', true), 'user_key');
+                $this->Form->fieldText('user_key', (isset($vars->user_key) ? $vars->user_key : null));
+                ?>
+            </li>
+            <li>
+                <?php
+                $this->Form->label($this->_('Upcloudvps.row_meta.pass_key', true), 'pass_key');
+                $this->Form->fieldText('pass_key', (isset($vars->pass_key) ? $vars->pass_key : null));
+                ?>
+            </li>
+        </ul>
+    </div>
+
+    <div class="button_row">
         <?php
-        $this->Widget->end();
+        $this->Form->fieldSubmit('save', $this->_('Upcloudvps.add_row.add_btn', true), ['class' => 'btn btn-primary pull-right']);
         ?>
+    </div>
+    <?php
+    $this->Form->end();
+    ?>
+</div>
+<?php
+$this->Widget->end();
+?>

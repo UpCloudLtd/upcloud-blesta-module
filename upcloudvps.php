@@ -1,4 +1,5 @@
 <?php
+
 use Blesta\Core\Util\Validate\Server;
 
 class Upcloudvps extends Module
@@ -140,8 +141,8 @@ class Upcloudvps extends Module
             $api = $this->getApi($pass_key, $user_key);
             $result = $api->GetAccountInfo();
             $this->log('Upcloudvps|accountRequest', serialize($result), 'input', true);
-            if($result['response_code'] == '200'){
-              return true;
+            if ($result['response_code'] == '200') {
+                return true;
             }
         } catch (Exception $e) {
         }
@@ -152,7 +153,7 @@ class Upcloudvps extends Module
     {
         Loader::load(dirname(__FILE__) . DS . 'apis' . DS . 'upcloudvps_api.php');
         Loader::loadComponents($this, ['Record']);
-       $setting = $this->Record->select(['key', 'value', 'encrypted', 'inherit'])
+        $setting = $this->Record->select(['key', 'value', 'encrypted', 'inherit'])
             ->select(['?' => 'level'], false)
             ->appendValues(['system'])
             ->from('settings')
@@ -179,9 +180,9 @@ class Upcloudvps extends Module
        //$this->log('upcloudvps|Getplans', serialize($result), 'input', true);
         $Vmplans = [];
         foreach ($result as $plan) {
-          $PlanDesc = Language::_('Upcloudvps.package.cpu', true) . ': ' . $plan['core_number'] . ' ' . Language::_('Upcloudvps.package.cpu', true) . ' / ' . Language::_('Upcloudvps.package.memory', true) . ': '
-         . $plan['memory_amount'] . Language::_('Upcloudvps.package.MB', true) . ' / ' . Language::_('Upcloudvps.package.disk', true) . ': ' . $plan['storage_size'] . Language::_('Upcloudvps.package.GB', true);
-        $Vmplans[$plan['name']] = $plan['name'] . ' [ ' . $PlanDesc . ' ]';
+            $PlanDesc = Language::_('Upcloudvps.package.cpu', true) . ': ' . $plan['core_number'] . ' ' . Language::_('Upcloudvps.package.cpu', true) . ' / ' . Language::_('Upcloudvps.package.memory', true) . ': '
+            . $plan['memory_amount'] . Language::_('Upcloudvps.package.MB', true) . ' / ' . Language::_('Upcloudvps.package.disk', true) . ': ' . $plan['storage_size'] . Language::_('Upcloudvps.package.GB', true);
+            $Vmplans[$plan['name']] = $plan['name'] . ' [ ' . $PlanDesc . ' ]';
         }
         return $Vmplans;
     }
@@ -192,17 +193,17 @@ class Upcloudvps extends Module
         $result_os = $api->GetTemplate()['response']['storages']['storage'];
        //$this->log('upcloudvps|GetTemplates', serialize($result_os), 'input', true);
         $templates = [];
-        if($package){
-          foreach ($result_os as $os) {
-            if (strpos($os['title'], 'Windows') !== false || strpos($os['title'], 'UpCloud') !== false) {
-                  continue;
-              }
-            $templates[$os['uuid']] =  $os['title'];
-          }
+        if ($package) {
+            foreach ($result_os as $os) {
+                if (strpos($os['title'], 'Windows') !== false || strpos($os['title'], 'UpCloud') !== false) {
+                    continue;
+                }
+                $templates[$os['uuid']] =  $os['title'];
+            }
         } else {
-          foreach ($result_os as $os) {
-            $templates[$os['uuid']] =  $os['title'];
-          }
+            foreach ($result_os as $os) {
+                $templates[$os['uuid']] =  $os['title'];
+            }
         }
 
         return $templates;
@@ -210,14 +211,14 @@ class Upcloudvps extends Module
 
     private function getLocations($module_row)
     {
-      $api = $this->getApi($module_row->meta->pass_key, $module_row->meta->user_key);
-      $zones = $api->GetZones()['response']['zones']['zone'];
+        $api = $this->getApi($module_row->meta->pass_key, $module_row->meta->user_key);
+        $zones = $api->GetZones()['response']['zones']['zone'];
     // $this->log('upcloudvps|getLocations', serialize($zones), 'input', true);
-     $zoneLocation = [];
-      foreach ($zones as $zone) {
-          $zoneLocation[$zone['id']] = $zone['description'];
-      }
-      return $zoneLocation;
+        $zoneLocation = [];
+        foreach ($zones as $zone) {
+            $zoneLocation[$zone['id']] = $zone['description'];
+        }
+        return $zoneLocation;
     }
 
     public function getPackageFields($vars = null)
@@ -400,43 +401,43 @@ class Upcloudvps extends Module
         return $this->addPackage($vars);
     }
 
-            public function suspendService($package, $service, $parent_package = null, $parent_service = null)
-        {
-            return $this->performServiceAction($service, 'StopServer', 'upcloudvps|suspend');
-        }
+    public function suspendService($package, $service, $parent_package = null, $parent_service = null)
+    {
+        return $this->performServiceAction($service, 'StopServer', 'upcloudvps|suspend');
+    }
 
-        public function unsuspendService($package, $service, $parent_package = null, $parent_service = null)
-        {
-            return $this->performServiceAction($service, 'StartServer', 'upcloudvps|unsuspend');
-        }
+    public function unsuspendService($package, $service, $parent_package = null, $parent_service = null)
+    {
+        return $this->performServiceAction($service, 'StartServer', 'upcloudvps|unsuspend');
+    }
 
-        public function cancelService($package, $service, $parent_package = null, $parent_service = null)
-        {
-            return $this->performServiceAction($service, 'DeleteServernStorage', 'upcloudvps|cancel', '204');
-        }
+    public function cancelService($package, $service, $parent_package = null, $parent_service = null)
+    {
+        return $this->performServiceAction($service, 'DeleteServernStorage', 'upcloudvps|cancel', '204');
+    }
 
-        private function performServiceAction($service, $actionName, $logTag, $expectedResponseCode = null)
-        {
-            $module_row = $this->getModuleRow();
-            if ($module_row) {
-                $api = $this->getApi($module_row->meta->pass_key, $module_row->meta->user_key);
-                $service_fields = $this->serviceFieldsToObject($service->fields);
-                $vmId = $service_fields->upcloudvps_vmid;
-                //$this->log($logTag, serialize(['vm_id' => $vmId]), 'input', true);
-                $actionResponse = $api->$actionName($vmId);
-                $success = true;
-                if ($expectedResponseCode && $actionResponse['response_code'] !== $expectedResponseCode) {
-                    $this->Input->setErrors(array('api' => array('response' => $actionResponse['response']['error']['error_message'])));
-                    $success = false;
-                }
-                if ($actionResponse['error']['error_message']) {
-                  $this->Input->setErrors(array('api' => array('response' => $actionResponse['error']['error_message'])));
-                  $success = false;
-              }
-                $this->log($logTag, serialize($actionResponse), 'output', $success);
+    private function performServiceAction($service, $actionName, $logTag, $expectedResponseCode = null)
+    {
+        $module_row = $this->getModuleRow();
+        if ($module_row) {
+            $api = $this->getApi($module_row->meta->pass_key, $module_row->meta->user_key);
+            $service_fields = $this->serviceFieldsToObject($service->fields);
+            $vmId = $service_fields->upcloudvps_vmid;
+            //$this->log($logTag, serialize(['vm_id' => $vmId]), 'input', true);
+            $actionResponse = $api->$actionName($vmId);
+            $success = true;
+            if ($expectedResponseCode && $actionResponse['response_code'] !== $expectedResponseCode) {
+                $this->Input->setErrors(array('api' => array('response' => $actionResponse['response']['error']['error_message'])));
+                $success = false;
             }
-            return null;
+            if ($actionResponse['error']['error_message']) {
+                $this->Input->setErrors(array('api' => array('response' => $actionResponse['error']['error_message'])));
+                $success = false;
+            }
+            $this->log($logTag, serialize($actionResponse), 'output', $success);
         }
+        return null;
+    }
 
 
     private function serviceOptionsToObject($options)
@@ -536,7 +537,8 @@ class Upcloudvps extends Module
     }
 
 
-    public function addService($package, array $vars = null,  $parent_package = null,  $parent_service = null,  $status = 'pending') {
+    public function addService($package, array $vars = null, $parent_package = null, $parent_service = null, $status = 'pending')
+    {
         // Get the module row
         $row = $this->getModuleRow();
         if (!$row) {
@@ -559,10 +561,10 @@ class Upcloudvps extends Module
                 if (empty($vars['upcloudvps_vmid'])) {
                     $server = $api->CreateServer($params);
                     $this->log('upcloudvps', serialize($server), 'output', true);
-                    if($server['response_code'] != '202'){
-                      $this->Input->setErrors(
-                          ['api' => ['internal' => $server['response']['error']['error_message']]]
-                      );
+                    if ($server['response_code'] != '202') {
+                        $this->Input->setErrors(
+                            ['api' => ['internal' => $server['response']['error']['error_message']]]
+                        );
                     }
                 }
             } catch (Exception $e) {
@@ -574,13 +576,13 @@ class Upcloudvps extends Module
             if ($this->Input->errors()) {
                 return;
             }
-                          foreach ($server['response']['server']['ip_addresses']['ip_address'] as $IPList) {
-                              if ($IPList['access'] == "public") {
-                                  if ($IPList['family'] == "IPv4" && ($IPList['part_of_plan'] )) {
-                                      $IPv4 = $IPList['address'];
-                                  }
-                                    }
-                                }
+            foreach ($server['response']['server']['ip_addresses']['ip_address'] as $IPList) {
+                if ($IPList['access'] == "public") {
+                    if ($IPList['family'] == "IPv4" && ($IPList['part_of_plan'] )) {
+                        $IPv4 = $IPList['address'];
+                    }
+                }
+            }
         }
         return [
             [
@@ -620,7 +622,8 @@ class Upcloudvps extends Module
     {
         $rules = $this->getServiceRules($vars, null, true);
         $service_fields = $this->serviceFieldsToObject($service->fields);
-        if (!isset($service_fields->upcloudvps_template)
+        if (
+            !isset($service_fields->upcloudvps_template)
             || !isset($vars['upcloudvps_template'])
             || $service_fields->upcloudvps_template == $vars['upcloudvps_template']
         ) {
@@ -821,7 +824,7 @@ class Upcloudvps extends Module
         return $fields;
     }
 
-        private function getServiceInfo($service, $package, $client = false)
+    private function getServiceInfo($service, $package, $client = false)
     {
         $row = $this->getModuleRow();
         $service_fields = $this->serviceFieldsToObject($service->fields);
@@ -919,36 +922,36 @@ class Upcloudvps extends Module
 
         // Perform actions
         if (!empty($post['action'])) {
-                switch ($post['action']) {
-                    case 'restart':
+            switch ($post['action']) {
+                case 'restart':
                     $action = $api->RestartServer($vmId)['response'];
                     break;
-                    case 'change_ptr':
-                    if($post['ip'] && $post['ptr']){
-                      $action = $api->ModifyIPaddress($vmId, $post['ip'], $post['ptr'])['response'];
+                case 'change_ptr':
+                    if ($post['ip'] && $post['ptr']) {
+                        $action = $api->ModifyIPaddress($vmId, $post['ip'], $post['ptr'])['response'];
                     }
-                        break;
-                    case 'start':
-                        $action = $api->StartServer($vmId)['response'];
-                        break;
-                    case 'stop':
+                    break;
+                case 'start':
+                    $action = $api->StartServer($vmId)['response'];
+                    break;
+                case 'stop':
                     $action = $api->StopServer($vmId)['response'];
-                        break;
-                        case 'enblvnc':
-                            $action = $api->vncEnableDisable($vmId, 'yes')['response'];
-                            break;
-                        case 'disblvnc':
-                        $action = $api->vncEnableDisable($vmId, 'no')['response'];
-                            break;
-                        case 'changepassword':
-                        $action = $api->vncPasswordUpdate($vmId, $this->generatePassword())['response'];
-                            break;
-                    default:
-                        break;
-                }
-                if($action['error']['error_message']){
-                  $this->Input->setErrors(array('api' => array('response' => $action['error']['error_message'])));
-                }
+                    break;
+                case 'enblvnc':
+                    $action = $api->vncEnableDisable($vmId, 'yes')['response'];
+                    break;
+                case 'disblvnc':
+                    $action = $api->vncEnableDisable($vmId, 'no')['response'];
+                    break;
+                case 'changepassword':
+                    $action = $api->vncPasswordUpdate($vmId, $this->generatePassword())['response'];
+                    break;
+                default:
+                    break;
+            }
+            if ($action['error']['error_message']) {
+                $this->Input->setErrors(array('api' => array('response' => $action['error']['error_message'])));
+            }
           //      $this->log('upcloudvps|action', serialize($action), 'output', true);
         }
 
@@ -972,9 +975,9 @@ class Upcloudvps extends Module
         $ipaddress = [];
         if (!empty($server_details["ip_addresses"])) {
             foreach ($server_details['ip_addresses']['ip_address'] as $ip) {
-              if ($ip["access"] == "public") {
-                $ipaddress[$ip['address']] =  $ip['address'];
-              }
+                if ($ip["access"] == "public") {
+                    $ipaddress[$ip['address']] =  $ip['address'];
+                }
                 if ($ip["family"] == "IPv4" && $ip["access"] == "public" && $ip["part_of_plan"] == "yes") {
                     $server_details['ipaddv4'] = $ip['address'];
                 }
@@ -985,45 +988,45 @@ class Upcloudvps extends Module
         }
 
         if (!empty($server_details['networking']['interfaces']['interface'])) {
-        foreach ($server_details['networking']['interfaces']['interface'] as $key => $ip) {
-          $ReverseDNSValue = $api->GetIPaddress($ip['ip_addresses']['ip_address'][0]['address'])['response'];
-          if (strpos($ReverseDNSValue['ip_address']['ptr_record'], "upcloud") !== false) {
-            $api->ModifyIPaddress($vmId, $ip['ip_addresses']['ip_address'][0]['address'], "client.".$_SERVER['SERVER_NAME'].".host");
-          }
-          $ReverseDNSValue = $api->GetIPaddress($ip['ip_addresses']['ip_address'][0]['address'])['response'];
-          $server_details['networking']['interfaces']['interface'][$key]['ptr'] = $ReverseDNSValue['ip_address']['ptr_record'];
+            foreach ($server_details['networking']['interfaces']['interface'] as $key => $ip) {
+                $ReverseDNSValue = $api->GetIPaddress($ip['ip_addresses']['ip_address'][0]['address'])['response'];
+                if (strpos($ReverseDNSValue['ip_address']['ptr_record'], "upcloud") !== false) {
+                    $api->ModifyIPaddress($vmId, $ip['ip_addresses']['ip_address'][0]['address'], "client." . $_SERVER['SERVER_NAME'] . ".host");
+                }
+                $ReverseDNSValue = $api->GetIPaddress($ip['ip_addresses']['ip_address'][0]['address'])['response'];
+                $server_details['networking']['interfaces']['interface'][$key]['ptr'] = $ReverseDNSValue['ip_address']['ptr_record'];
+            }
         }
-      }
 
         $server_details['remote_access_host'] = gethostbyname($server_details['remote_access_host']);
         $server_details['user'] = (strpos($server_details['osname'], 'Windows') !== false) ? "administrator" : "root";
         $server_details['rootpassword'] = $service_fields->upcloudvps_password;
 
-        if($server_details['remote_access_enabled'] == "no"){
-          unset($server_details['remote_access_password']);
+        if ($server_details['remote_access_enabled'] == "no") {
+            unset($server_details['remote_access_password']);
         }
 
-        foreach ($api->Getplans()['response']['plans']['plan'] as $Plan){
-         if($Plan['name'] == $server_details['plan'] and $Plan['memory_amount'] == $server_details['memory_amount']){
-         $TotalTraffic = $Plan['public_traffic_out'] ;
-         $Outgoing = $api->formatSizeBytestoGB($server_details['plan_ipv4_bytes'] + $server_details['plan_ipv6_bytes']);
-       $Percentage = round((($Outgoing / $TotalTraffic) * 100), 2) ;
-       $progressClass = 'progress-bar-success';
-   if ($Percentage >= 49 && $Percentage < 70) {
-       $progressClass = 'progress-bar-info';
-   } elseif ($Percentage >= 70 && $Percentage < 86) {
-       $progressClass = 'progress-bar-warning';
-   } elseif ($Percentage >= 86) {
-       $progressClass = 'progress-bar-danger';
-   }
+        foreach ($api->Getplans()['response']['plans']['plan'] as $Plan) {
+            if ($Plan['name'] == $server_details['plan'] and $Plan['memory_amount'] == $server_details['memory_amount']) {
+                $TotalTraffic = $Plan['public_traffic_out'] ;
+                $Outgoing = $api->formatSizeBytestoGB($server_details['plan_ipv4_bytes'] + $server_details['plan_ipv6_bytes']);
+                $Percentage = round((($Outgoing / $TotalTraffic) * 100), 2) ;
+                $progressClass = 'progress-bar-success';
+                if ($Percentage >= 49 && $Percentage < 70) {
+                           $progressClass = 'progress-bar-info';
+                } elseif ($Percentage >= 70 && $Percentage < 86) {
+                        $progressClass = 'progress-bar-warning';
+                } elseif ($Percentage >= 86) {
+                     $progressClass = 'progress-bar-danger';
+                }
 
-   $server_details['Bandwidth'] = '<div class="progress">
+                $server_details['Bandwidth'] = '<div class="progress">
        <div class="progress-bar ' . $progressClass . '" role="progressbar" aria-valuenow="' . $Percentage . '"
        aria-valuemin="0" aria-valuemax="100" style="width:' . $Percentage . '%">
          ' . $Percentage . '%
        </div>
      </div>';
-         }
+            }
         }
 
         $server_details['limit'] = $TotalTraffic . ' ' . Language::_('Upcloudvps.graphs.GB', true);
@@ -1043,32 +1046,31 @@ class Upcloudvps extends Module
         return $this->view->fetch();
     }
 
-            private function generatePassword()
-        {
-            $pool = 'abcdefghijklmnopqrstuvwxyz0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ';
-            $pool_size = strlen($pool);
-            $password = '';
+    private function generatePassword()
+    {
+        $pool = 'abcdefghijklmnopqrstuvwxyz0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+        $pool_size = strlen($pool);
+        $password = '';
 
-            for ($i = 0; $i < 8; $i++) {
+        for ($i = 0; $i < 8; $i++) {
                 $password .= $pool[mt_rand(0, $pool_size - 1)];
-            }
-
-            return $password;
         }
 
-    public function changeServicePackage($package_from, $package_to, $service,$parent_package = null, $parent_service = null)
+                return $password;
+    }
+
+    public function changeServicePackage($package_from, $package_to, $service, $parent_package = null, $parent_service = null)
     {
         if (($row = $this->getModuleRow())) {
             $api = $this->getApi($row->meta->pass_key, $row->meta->user_key);
             if ($package_from->meta->server_plan != $package_to->meta->server_plan) {
                 $service_fields = $this->serviceFieldsToObject($service->fields);
                 $action - $api->ModifyServer($service_fields->upcloudvps_vmid, $package_to->meta->server_plan);
-                if($action['response']['error']['error_message']){
-                  $this->Input->setErrors(array('api' => array('response' => $action['response']['error']['error_message'])));
+                if ($action['response']['error']['error_message']) {
+                    $this->Input->setErrors(array('api' => array('response' => $action['response']['error']['error_message'])));
                 }
             }
         }
         return null;
     }
-
 }

@@ -1,0 +1,6 @@
+{
+    "files.associations": {
+        "*.pdt": "php",
+        "*.xml.dist": "xml"
+    }
+}
