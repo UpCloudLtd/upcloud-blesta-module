@@ -9,4 +9,4 @@ pre-commit:
       exclude:
         - vendor/*
       run: |
-        vendor/bin/phpcbf {staged_files}
+        vendor/bin/phpcbf --runtime-set php_version 70200 {staged_files}
