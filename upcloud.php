@@ -2,7 +2,7 @@
 
 use Blesta\Core\Util\Validate\Server;
 
-class Upcloudvps extends Module
+class Upcloud extends Module
 {
     public function __construct()
     {
