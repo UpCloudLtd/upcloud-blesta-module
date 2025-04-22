@@ -1,6 +1,6 @@
 <?php
 
-$lang['Upcloudvps.name'] = 'upCloud VPS';
+$lang['Upcloudvps.name'] = 'UpCloud VPS';
 $lang['Upcloudvps.tab_actions'] = 'Actions';
 $lang['Upcloudvps.tab_stats'] = 'Statistics';
 $lang['Upcloudvps.tab_graphs'] = 'Bandwidth Graphs';
@@ -14,10 +14,10 @@ $lang['Upcloudvps.tab_client_actions'] = 'Actions';
 $lang['Upcloudvps.tab_client_stats'] = 'Statistics';
 
 // Add row
-$lang['Upcloudvps.add_row.box_title'] = 'Add upCloud Server';
+$lang['Upcloudvps.add_row.box_title'] = 'Add UpCloud Server';
 $lang['Upcloudvps.add_row.basic_title'] = 'Basic Settings';
 $lang['Upcloudvps.add_row.add_btn'] = 'Add Server';
-$lang['Upcloudvps.edit_row.box_title'] = 'Edit upCloud Server';
+$lang['Upcloudvps.edit_row.box_title'] = 'Edit UpCloud Server';
 $lang['Upcloudvps.edit_row.basic_title'] = 'Basic Settings';
 $lang['Upcloudvps.edit_row.add_btn'] = 'Edit Server';
 $lang['Upcloudvps.row_meta.account_name'] = 'Account Name';
@@ -25,8 +25,8 @@ $lang['Upcloudvps.row_meta.pass_key'] = 'API User Password';
 $lang['Upcloudvps.row_meta.user_key'] = 'API User Name';
 $lang['Upcloudvps.module_row'] = 'Account';
 $lang['Upcloudvps.module_row_plural'] = 'Accounts';
-$lang['Upcloudvps.description'] = 'The upCloud module make upCloud VPS management simple and intuitive. Common tasks such as a ordering VPS, Start, Stop, Reboot, Change Password, View Data Usage are only a few clicks away.';
-$lang['Upcloudvps.row_meta.use_log'] = "Enable module debuging in case module does not work";
+$lang['Upcloudvps.description'] = 'The UpCloud module make UpCloud VPS management simple and intuitive. Common tasks such as a ordering VPS, Start, Stop, Reboot, Change Password, View Data Usage are only a few clicks away.';
+$lang['Upcloudvps.row_meta.use_log'] = "Enable module debugging in case module does not work";
 
 // Module management
 $lang['Upcloudvps.add_module_row'] = 'Add Account';
@@ -165,7 +165,7 @@ $lang['Upcloudvps.stats.timeInfo'] = 'These are all the actions made for this VP
 //Graphs
 $lang['Upcloudvps.stats.info.Bandwidth'] = 'Bandwidth Usage';
 $lang['Upcloudvps.stats.info.percentage'] = 'Bandwidth Percentage';
-$lang['Upcloudvps.graphs.downlaod'] = 'Downlaod';
+$lang['Upcloudvps.graphs.download'] = 'Download';
 $lang['Upcloudvps.graphs.upload'] = 'Upload';
 $lang['Upcloudvps.stats.info.limit'] = 'Bandwidth Limit';
 $lang['Upcloudvps.graphs.GB'] = 'GB';

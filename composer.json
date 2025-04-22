@@ -1,6 +1,6 @@
 {
     "name": "blesta/upcloud",
-    "description": "upCloud VPS",
+    "description": "UpCloud VPS",
     "license": "proprietary",
     "type": "blesta-module",
     "require": {
