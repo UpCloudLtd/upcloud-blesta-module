@@ -4,6 +4,9 @@ use Blesta\Core\Util\Validate\Server;
 
 class Upcloud extends Module
 {
+    /**
+     * Initializes the module. Loads language files, configuration, and components.
+     */
     public function __construct()
     {
         Language::loadLang('upcloud', null, dirname(__FILE__) . DS . 'language' . DS);
@@ -12,6 +15,14 @@ class Upcloud extends Module
         Configure::load('upcloud', dirname(__FILE__) . DS . 'config' . DS);
     }
 
+    /**
+     * Renders the manage module page.
+     * This page is used to display module information and settings.
+     *
+     * @param stdClass $module The module instance
+     * @param array &$vars An array of post data submitted to the manage module page (when applicable)
+     * @return string The rendered view
+     */
     public function manageModule($module, array &$vars)
     {
         $this->view = new View('manage', 'default');
@@ -22,6 +33,12 @@ class Upcloud extends Module
         return $this->view->fetch();
     }
 
+    /**
+     * Renders the view for adding a module row (server account).
+     *
+     * @param array &$vars An array of post data submitted (if any)
+     * @return string The rendered view
+     */
     public function manageAddRow(array &$vars)
     {
         $this->view = new View('add_row', 'default');
@@ -37,6 +54,13 @@ class Upcloud extends Module
         return $this->view->fetch();
     }
 
+    /**
+     * Renders the view for editing a module row (server account).
+     *
+     * @param stdClass $module_row The module row to edit
+     * @param array &$vars An array of post data submitted (if any)
+     * @return string The rendered view
+     */
     public function manageEditRow($module_row, array &$vars)
     {
         $this->view = new View('edit_row', 'default');
@@ -54,6 +78,15 @@ class Upcloud extends Module
         return $this->view->fetch();
     }
 
+    /**
+     * Adds a new module row (server account). Validates input and returns meta data.
+     *
+     * @param array &$vars An array of input data including:
+     *  - account_name (string) The account name
+     *  - user_key (string) The UpCloud API username
+     *  - pass_key (string) The UpCloud API password
+     * @return array An array of meta fields to be stored for the module row
+     */
     public function addModuleRow(array &$vars)
     {
         $meta_fields = ['account_name', 'user_key', 'pass_key'];
@@ -74,6 +107,16 @@ class Upcloud extends Module
         }
     }
 
+    /**
+     * Edits an existing module row (server account). Validates input and returns meta data.
+     *
+     * @param stdClass $module_row The module row to edit
+     * @param array &$vars An array of input data including:
+     *  - account_name (string) The account name
+     *  - user_key (string) The UpCloud API username
+     *  - pass_key (string) The UpCloud API password
+     * @return array An array of meta fields to be stored for the module row
+     */
     public function editModuleRow($module_row, array &$vars)
     {
         $meta_fields = ['account_name', 'user_key', 'pass_key'];
@@ -98,6 +141,12 @@ class Upcloud extends Module
         }
     }
 
+    /**
+     * Returns the validation rules for adding/editing a module row.
+     *
+     * @param array &$vars An array of input data
+     * @return array An array of input validation rules
+     */
     private function getRowRules(&$vars)
     {
         $rules = [
@@ -135,6 +184,13 @@ class Upcloud extends Module
         return $rules;
     }
 
+    /**
+     * Validates the connection to the UpCloud API using provided credentials.
+     *
+     * @param string $pass_key The UpCloud API password
+     * @param string $user_key The UpCloud API username
+     * @return bool True if the connection is successful, false otherwise
+     */
     public function validateConnection($pass_key, $user_key)
     {
         try {
@@ -149,6 +205,13 @@ class Upcloud extends Module
         return false;
     }
 
+    /**
+     * Initializes and returns an instance of the UpcloudvpsApi.
+     *
+     * @param string $pass_key The UpCloud API password
+     * @param string $user_key The UpCloud API username
+     * @return UpcloudvpsApi An instance of the UpCloud API wrapper
+     */
     private function getApi($pass_key, $user_key)
     {
         Loader::load(dirname(__FILE__) . DS . 'apis' . DS . 'upcloudvps_api.php');
@@ -173,6 +236,12 @@ class Upcloud extends Module
         return $api;
     }
 
+    /**
+     * Fetches available server plans from the UpCloud API for a given module row.
+     *
+     * @param stdClass $module_row The module row containing API credentials
+     * @return array An array of server plans [plan_name => display_name]
+     */
     private function getServerPlans($module_row)
     {
         $api = $this->getApi($module_row->meta->pass_key, $module_row->meta->user_key);
@@ -187,6 +256,14 @@ class Upcloud extends Module
         return $Vmplans;
     }
 
+    /**
+     * Fetches available OS templates from the UpCloud API for a given module row.
+     * Optionally filters templates based on package settings.
+     *
+     * @param stdClass $module_row The module row containing API credentials
+     * @param stdClass|null $package The package object (optional)
+     * @return array An array of templates [template_uuid => template_title]
+     */
     private function getTemplates($module_row, $package = null)
     {
         $api = $this->getApi($module_row->meta->pass_key, $module_row->meta->user_key);
@@ -209,6 +286,12 @@ class Upcloud extends Module
         return $templates;
     }
 
+    /**
+     * Fetches available server locations (zones) from the UpCloud API for a given module row.
+     *
+     * @param stdClass $module_row The module row containing API credentials
+     * @return array An array of locations [zone_id => zone_description]
+     */
     private function getLocations($module_row)
     {
         $api = $this->getApi($module_row->meta->pass_key, $module_row->meta->user_key);
@@ -221,6 +304,12 @@ class Upcloud extends Module
         return $zoneLocation;
     }
 
+    /**
+     * Returns the fields used for configuring a package. Populates options from the API.
+     *
+     * @param stdClass|null $vars An object containing package meta data (optional)
+     * @return ModuleFields A ModuleFields object containing the package fields
+     */
     public function getPackageFields($vars = null)
     {
         Loader::loadHelpers($this, ['Html']);
@@ -363,6 +452,12 @@ class Upcloud extends Module
         return $fields;
     }
 
+    /**
+     * Returns the validation rules for adding/editing a package.
+     *
+     * @param array &$vars An array of package meta data
+     * @return array An array of input validation rules
+     */
     private function getPackageRules(&$vars)
     {
         $rules = [
@@ -380,6 +475,13 @@ class Upcloud extends Module
         return $rules;
     }
 
+    /**
+     * Processes and formats package meta data for saving.
+     * Called when adding a package.
+     *
+     * @param array|null $vars An array of package meta data
+     * @return array An array of formatted meta data for storage
+     */
     public function addPackage(array $vars = null)
     {
         $this->Input->setRules($this->getPackageRules($vars));
@@ -396,26 +498,71 @@ class Upcloud extends Module
         return $meta;
     }
 
+    /**
+     * Processes and formats package meta data for saving.
+     * Called when editing a package. Reuses addPackage logic.
+     *
+     * @param stdClass $package The package being edited
+     * @param array|null $vars An array of package meta data
+     * @return array An array of formatted meta data for storage
+     */
     public function editPackage($package, array $vars = null)
     {
         return $this->addPackage($vars);
     }
 
+    /**
+     * Suspends a service by stopping the server via the API.
+     *
+     * @param stdClass $package The package the service belongs to
+     * @param stdClass $service The service to suspend
+     * @param stdClass|null $parent_package The parent package (if applicable)
+     * @param stdClass|null $parent_service The parent service (if applicable)
+     * @return null|string A language string describing success/failure, or null on error
+     */
     public function suspendService($package, $service, $parent_package = null, $parent_service = null)
     {
         return $this->performServiceAction($service, 'StopServer', 'upcloud|suspend');
     }
 
+    /**
+     * Unsuspends a service by starting the server via the API.
+     *
+     * @param stdClass $package The package the service belongs to
+     * @param stdClass $service The service to unsuspend
+     * @param stdClass|null $parent_package The parent package (if applicable)
+     * @param stdClass|null $parent_service The parent service (if applicable)
+     * @return null|string A language string describing success/failure, or null on error
+     */
     public function unsuspendService($package, $service, $parent_package = null, $parent_service = null)
     {
         return $this->performServiceAction($service, 'StartServer', 'upcloud|unsuspend');
     }
 
+    /**
+     * Cancels a service by deleting the server and its storage via the API.
+     *
+     * @param stdClass $package The package the service belongs to
+     * @param stdClass $service The service to cancel
+     * @param stdClass|null $parent_package The parent package (if applicable)
+     * @param stdClass|null $parent_service The parent service (if applicable)
+     * @return null|string A language string describing success/failure, or null on error
+     */
     public function cancelService($package, $service, $parent_package = null, $parent_service = null)
     {
         return $this->performServiceAction($service, 'DeleteServerAndStorage', 'upcloud|cancel', '204');
     }
 
+    /**
+     * Performs a generic service action (start, stop, delete) via the API.
+     * Logs the action and sets errors if the API call fails.
+     *
+     * @param stdClass $service The service object
+     * @param string $actionName The API method name to call (e.g., 'StopServer')
+     * @param string $logTag The tag to use for logging
+     * @param string|null $expectedResponseCode The expected HTTP response code for success (optional)
+     * @return null Returns null on completion (errors are set via Input component)
+     */
     private function performServiceAction($service, $actionName, $logTag, $expectedResponseCode = null)
     {
         $module_row = $this->getModuleRow();
@@ -440,6 +587,12 @@ class Upcloud extends Module
     }
 
 
+    /**
+     * Converts an array of service field objects into a single stdClass object.
+     *
+     * @param array $options An array of service field objects (usually from $service->fields)
+     * @return stdClass An object with service field names as keys and values
+     */
     private function serviceOptionsToObject($options)
     {
         $object = [];
@@ -451,6 +604,13 @@ class Upcloud extends Module
         return (object) $object;
     }
 
+    /**
+     * Extracts and formats service fields from input variables based on package settings.
+     *
+     * @param array $vars An array of input data (typically from service add/edit form)
+     * @param stdClass $package The package associated with the service
+     * @return array An array of formatted service parameters for API calls
+     */
     private function getFieldsFromInput(array $vars, $package)
     {
         if ($package->meta->set_template == 'admin') {
@@ -467,6 +627,13 @@ class Upcloud extends Module
         return $fields;
     }
 
+    /**
+     * Validates service data before adding a service.
+     *
+     * @param stdClass $package The package being added to
+     * @param array|null $vars An array of input service data
+     * @return bool True if validation passes, false otherwise (errors set via Input component)
+     */
     public function validateService($package, array $vars = null)
     {
         $rules = $this->getServiceRules($vars, $package, false);
@@ -477,6 +644,14 @@ class Upcloud extends Module
         return $this->Input->validates($vars);
     }
 
+    /**
+     * Returns the validation rules for adding or editing a service.
+     *
+     * @param array|null $vars An array of input service data
+     * @param stdClass|null $package The package associated with the service
+     * @param bool $edit True if editing an existing service, false otherwise
+     * @return array An array of input validation rules
+     */
     private function getServiceRules(array $vars = null, $package = null, $edit = false)
     {
         $rules = [
@@ -506,12 +681,24 @@ class Upcloud extends Module
         return $rules;
     }
 
+    /**
+     * Validates a hostname using Blesta's Server validator.
+     *
+     * @param string $host_name The hostname to validate
+     * @return bool True if the hostname is a valid domain or IP, false otherwise
+     */
     public function validateHostName($host_name)
     {
         $validator = new Server();
         return $validator->isDomain($host_name) || $validator->isIp($host_name);
     }
 
+    /**
+     * Validates if a given location ID exists in the available locations from the API.
+     *
+     * @param string $location The location ID to validate
+     * @return bool True if the location is valid, false otherwise
+     */
     public function validateLocation($location)
     {
         $module_row = null;
@@ -524,6 +711,12 @@ class Upcloud extends Module
         return array_key_exists(trim($location), $valid_locations);
     }
 
+    /**
+     * Validates if a given template UUID exists in the available templates from the API.
+     *
+     * @param string $template The template UUID to validate
+     * @return bool True if the template is valid, false otherwise
+     */
     public function validateTemplate($template)
     {
         $module_row = null;
@@ -537,6 +730,16 @@ class Upcloud extends Module
     }
 
 
+    /**
+     * Adds a new service. Creates the server via the API if 'use_module' is true.
+     *
+     * @param stdClass $package The package to add the service to
+     * @param array|null $vars An array of input service data
+     * @param stdClass|null $parent_package The parent package (if applicable)
+     * @param stdClass|null $parent_service The parent service (if applicable)
+     * @param string $status The initial status of the service (default: 'pending')
+     * @return array|null An array of service fields to save, or null on error
+     */
     public function addService($package, array $vars = null, $parent_package = null, $parent_service = null, $status = 'pending')
     {
         // Get the module row
@@ -618,6 +821,14 @@ class Upcloud extends Module
         ];
     }
 
+    /**
+     * Validates service data before editing a service.
+     * Skips validation for fields that haven't changed.
+     *
+     * @param stdClass $service The service being edited
+     * @param array|null $vars An array of input service data
+     * @return bool True if validation passes, false otherwise (errors set via Input component)
+     */
     public function validateServiceEdit($service, array $vars = null)
     {
         $rules = $this->getServiceRules($vars, null, true);
@@ -634,6 +845,16 @@ class Upcloud extends Module
     }
 
 
+    /**
+     * Edits an existing service. Updates fields locally, API interaction might be needed for some changes (currently minimal).
+     *
+     * @param stdClass $package The package the service belongs to
+     * @param stdClass $service The service being edited
+     * @param array|null $vars An array of input service data
+     * @param stdClass|null $parent_package The parent package (if applicable)
+     * @param stdClass|null $parent_service The parent service (if applicable)
+     * @return array|null An array of service fields to save, or null on error
+     */
     public function editService($package, $service, array $vars = null, $parent_package = null, $parent_service = null)
     {
         $row = $this->getModuleRow();
@@ -681,6 +902,14 @@ class Upcloud extends Module
         return $fields;
     }
 
+    /**
+     * Returns the fields for adding a service in the admin area.
+     * Populates options (locations, templates) from the API.
+     *
+     * @param stdClass $package The package the service will belong to
+     * @param stdClass|null $vars An object containing pre-filled data (optional)
+     * @return ModuleFields A ModuleFields object containing the service fields
+     */
     public function getAdminAddFields($package, $vars = null)
     {
         Loader::loadHelpers($this, ['Html']);
@@ -741,6 +970,14 @@ class Upcloud extends Module
         return $fields;
     }
 
+    /**
+     * Returns the fields for editing a service in the admin area.
+     * Populates template options from the API if applicable.
+     *
+     * @param stdClass $package The package the service belongs to
+     * @param stdClass|null $vars An object containing the current service data (optional)
+     * @return ModuleFields A ModuleFields object containing the service fields
+     */
     public function getAdminEditFields($package, $vars = null)
     {
         Loader::loadHelpers($this, ['Html']);
@@ -777,6 +1014,14 @@ class Upcloud extends Module
         return $fields;
     }
 
+    /**
+     * Returns the fields for adding a service in the client area.
+     * Populates options (locations, templates) from the API.
+     *
+     * @param stdClass $package The package the service will belong to
+     * @param stdClass|null $vars An object containing pre-filled data (optional)
+     * @return ModuleFields A ModuleFields object containing the service fields
+     */
     public function getClientAddFields($package, $vars = null)
     {
         Loader::loadHelpers($this, ['Html']);
@@ -824,6 +1069,15 @@ class Upcloud extends Module
         return $fields;
     }
 
+    /**
+     * Fetches and renders service information for display in admin or client area.
+     * Retrieves server details from the UpCloud API.
+     *
+     * @param stdClass $service The service object
+     * @param stdClass $package The package the service belongs to
+     * @param bool $client True if rendering for the client area, false for admin
+     * @return string The rendered service information view
+     */
     private function getServiceInfo($service, $package, $client = false)
     {
         $row = $this->getModuleRow();
@@ -875,37 +1129,95 @@ class Upcloud extends Module
         return $this->view->fetch();
     }
 
+    /**
+     * Returns the rendered service information view for the admin area.
+     *
+     * @param stdClass $service The service object
+     * @param stdClass $package The package the service belongs to
+     * @return string The rendered view
+     */
     public function getAdminServiceInfo($service, $package)
     {
         return $this->getServiceInfo($service, $package);
     }
 
+    /**
+     * Returns the rendered service information view for the client area.
+     *
+     * @param stdClass $service The service object
+     * @param stdClass $package The package the service belongs to
+     * @return string The rendered view
+     */
     public function getClientServiceInfo($service, $package)
     {
         return $this->getServiceInfo($service, $package, true);
     }
 
 
+    /**
+     * Returns the tabs to display on the admin service management page.
+     *
+     * @param stdClass $package The package the service belongs to
+     * @return array An array of tabs [tab_key => tab_name]
+     */
     public function getAdminTabs($package)
     {
         return ['tabActions' => Language::_('Upcloudvps.tab_actions', true),];
     }
 
+    /**
+     * Returns the tabs to display on the client service management page.
+     *
+     * @param stdClass $package The package the service belongs to
+     * @return array An array of tabs [tab_key => tab_name]
+     */
     public function getClientTabs($package)
     {
         return ['tabClientActions' => Language::_('Upcloudvps.tab_client_actions', true),];
     }
 
+    /**
+     * Renders the content for the 'Actions' tab in the admin service management area.
+     * Handles POST requests for actions like restart, stop, etc.
+     *
+     * @param stdClass $package The package the service belongs to
+     * @param stdClass $service The service object
+     * @param array|null $get GET request data
+     * @param array|null $post POST request data
+     * @param array|null $files FILES request data
+     * @return string The rendered tab content
+     */
     public function tabActions($package, $service, array $get = null, array $post = null, array $files = null)
     {
         return $this->getTabActions($package, $service, $post);
     }
 
+    /**
+     * Renders the content for the 'Actions' tab in the client service management area.
+     * Handles POST requests for actions like restart, stop, etc.
+     *
+     * @param stdClass $package The package the service belongs to
+     * @param stdClass $service The service object
+     * @param array|null $get GET request data
+     * @param array|null $post POST request data
+     * @param array|null $files FILES request data
+     * @return string The rendered tab content
+     */
     public function tabClientActions($package, $service, array $get = null, array $post = null, array $files = null)
     {
         return $this->getTabActions($package, $service, $post, true);
     }
 
+    /**
+     * Fetches data and renders the content for the service actions tab (admin or client).
+     * Handles POST actions by calling the API.
+     *
+     * @param stdClass $package The package the service belongs to
+     * @param stdClass $service The service object
+     * @param array|null $post POST request data containing the action to perform
+     * @param bool $client True if rendering for the client area, false for admin
+     * @return string The rendered tab view
+     */
     private function getTabActions($package, $service, array $post = null, $client = false)
     {
         $row = $this->getModuleRow();
@@ -1046,6 +1358,11 @@ class Upcloud extends Module
         return $this->view->fetch();
     }
 
+    /**
+     * Generates a random password string.
+     *
+     * @return string The generated password
+     */
     private function generatePassword()
     {
         $pool = 'abcdefghijklmnopqrstuvwxyz0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ';
@@ -1059,6 +1376,17 @@ class Upcloud extends Module
         return $password;
     }
 
+    /**
+     * Handles changing a service's package.
+     * If the server plan differs, it calls the API to modify the server.
+     *
+     * @param stdClass $package_from The package the service is currently assigned to
+     * @param stdClass $package_to The package the service is being changed to
+     * @param stdClass $service The service being changed
+     * @param stdClass|null $parent_package The parent package (if applicable)
+     * @param stdClass|null $parent_service The parent service (if applicable)
+     * @return null Returns null on completion (errors set via Input component if API call fails)
+     */
     public function changeServicePackage($package_from, $package_to, $service, $parent_package = null, $parent_service = null)
     {
         if (($row = $this->getModuleRow())) {
