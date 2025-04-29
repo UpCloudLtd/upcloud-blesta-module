@@ -1065,7 +1065,7 @@ class Upcloud extends Module
             $api = $this->getApi($row->meta->pass_key, $row->meta->user_key);
             if ($package_from->meta->server_plan != $package_to->meta->server_plan) {
                 $service_fields = $this->serviceFieldsToObject($service->fields);
-                $action - $api->ModifyServer($service_fields->upcloudvps_vmid, $package_to->meta->server_plan);
+                $action = $api->ModifyServer($service_fields->upcloudvps_vmid, $package_to->meta->server_plan);
                 if ($action['response']['error']['error_message']) {
                     $this->Input->setErrors(array('api' => array('response' => $action['response']['error']['error_message'])));
                 }
