@@ -427,11 +427,11 @@ class Upcloud extends Module
             $actionResponse = $api->$actionName($vmId);
             $success = true;
             if ($expectedResponseCode && $actionResponse['response_code'] !== $expectedResponseCode) {
-                $this->Input->setErrors(array('api' => array('response' => $actionResponse['response']['error']['error_message'])));
+                $this->Input->setErrors(['api' => ['response' => $actionResponse['response']['error']['error_message']]]);
                 $success = false;
             }
             if ($actionResponse['error']['error_message']) {
-                $this->Input->setErrors(array('api' => array('response' => $actionResponse['error']['error_message'])));
+                $this->Input->setErrors(['api' => ['response' => $actionResponse['error']['error_message']]]);
                 $success = false;
             }
             $this->log($logTag, serialize($actionResponse), 'output', $success);
@@ -950,7 +950,7 @@ class Upcloud extends Module
                     break;
             }
             if ($action['error']['error_message']) {
-                $this->Input->setErrors(array('api' => array('response' => $action['error']['error_message'])));
+                $this->Input->setErrors(['api' => ['response' => $action['error']['error_message']]]);
             }
           //      $this->log('upcloud|action', serialize($action), 'output', true);
         }
@@ -1067,7 +1067,7 @@ class Upcloud extends Module
                 $service_fields = $this->serviceFieldsToObject($service->fields);
                 $action = $api->ModifyServer($service_fields->upcloudvps_vmid, $package_to->meta->server_plan);
                 if ($action['response']['error']['error_message']) {
-                    $this->Input->setErrors(array('api' => array('response' => $action['response']['error']['error_message'])));
+                    $this->Input->setErrors(['api' => ['response' => $action['response']['error']['error_message']]]);
                 }
             }
         }

@@ -170,7 +170,7 @@ class UpcloudvpsApi
 
     public function serverOperation($action, $ServerUUID, $stop_type = null)
     {
-        $data = array();
+        $data = [];
         if ($stop_type !== null) {
             $data[$action . '_server']['stop_type'] = $stop_type;
             $data[$action . '_server']['timeout'] = "60";
@@ -289,18 +289,18 @@ class UpcloudvpsApi
         if (!($this->GetIPaddress($IP)['response']['ip_address']['server'] == $instanceId)) {
             $this->logger->error('IP does not belong to your server');
         }
-        return $this->put('ip_address/' . $IP, array('ip_address' => array('ptr_record' => $ptr_record)));
+        return $this->put('ip_address/' . $IP, ['ip_address' => ['ptr_record' => $ptr_record]]);
     }
 
 
     public function vncPasswordUpdate($instanceId, $vncPass)
     {
-        return $this->put('server/' . $instanceId, array('server' => array('remote_access_password' => $vncPass)));
+        return $this->put('server/' . $instanceId, ['server' => ['remote_access_password' => $vncPass]]);
     }
 
     public function vncEnableDisable($instanceId, $vncType)
     {
-        return $this->put('server/' . $instanceId, array('server' => array('remote_access_enabled' => $vncType)));
+        return $this->put('server/' . $instanceId, ['server' => ['remote_access_enabled' => $vncType]]);
     }
 
     public function modifyVPS($instanceId, $serverConfig)
