@@ -9,7 +9,7 @@ class Upcloud extends Module
         Language::loadLang('upcloud', null, dirname(__FILE__) . DS . 'language' . DS);
         $this->loadConfig(dirname(__FILE__) . DS . 'config.json');
         Loader::loadComponents($this, ['Input']);
-        Configure::load('upcloudvps', dirname(__FILE__) . DS . 'config' . DS);
+        Configure::load('upcloud', dirname(__FILE__) . DS . 'config' . DS);
     }
 
     public function manageModule($module, array &$vars)
@@ -560,7 +560,7 @@ class Upcloud extends Module
                 $api = $this->getApi($row->meta->pass_key, $row->meta->user_key);
                 if (empty($vars['upcloudvps_vmid'])) {
                     $server = $api->CreateServer($params);
-                    $this->log('upcloudvps', serialize($server), 'output', true);
+                    $this->log('upcloud', serialize($server), 'output', true);
                     if ($server['response_code'] != '202') {
                         $this->Input->setErrors(
                             ['api' => ['internal' => $server['response']['error']['error_message']]]
@@ -833,7 +833,7 @@ class Upcloud extends Module
         $server_details = $response ?? (object) [];
         $this->view = new View($client ? 'client_service_info' : 'admin_service_info', 'default');
         $this->view->base_uri = $this->base_uri;
-        $this->view->setDefaultView('components' . DS . 'modules' . DS . 'upcloudvps' . DS);
+        $this->view->setDefaultView('components' . DS . 'modules' . DS . 'upcloud' . DS);
 
         // Load the helpers required for this view
         Loader::loadHelpers($this, ['Form', 'Html']);
@@ -1041,7 +1041,7 @@ class Upcloud extends Module
         $this->view->set('server_details', ($server_details ?? new stdClass()));
         $this->view->set('vars', ($vars ?? new stdClass()));
 
-        $this->view->setDefaultView('components' . DS . 'modules' . DS . 'upcloudvps' . DS);
+        $this->view->setDefaultView('components' . DS . 'modules' . DS . 'upcloud' . DS);
 
         return $this->view->fetch();
     }
