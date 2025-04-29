@@ -6,7 +6,7 @@ class Upcloud extends Module
 {
     public function __construct()
     {
-        Language::loadLang('upcloudvps', null, dirname(__FILE__) . DS . 'language' . DS);
+        Language::loadLang('upcloud', null, dirname(__FILE__) . DS . 'language' . DS);
         $this->loadConfig(dirname(__FILE__) . DS . 'config.json');
         Loader::loadComponents($this, ['Input']);
         Configure::load('upcloudvps', dirname(__FILE__) . DS . 'config' . DS);
@@ -16,7 +16,7 @@ class Upcloud extends Module
     {
         $this->view = new View('manage', 'default');
         $this->view->base_uri = $this->base_uri;
-        $this->view->setDefaultView('components' . DS . 'modules' . DS . 'upcloudvps' . DS);
+        $this->view->setDefaultView('components' . DS . 'modules' . DS . 'upcloud' . DS);
         Loader::loadHelpers($this, ['Form', 'Html', 'Widget']);
         $this->view->set('module', $module);
         return $this->view->fetch();
@@ -26,7 +26,7 @@ class Upcloud extends Module
     {
         $this->view = new View('add_row', 'default');
         $this->view->base_uri = $this->base_uri;
-        $this->view->setDefaultView('components' . DS . 'modules' . DS . 'upcloudvps' . DS);
+        $this->view->setDefaultView('components' . DS . 'modules' . DS . 'upcloud' . DS);
         Loader::loadHelpers($this, ['Form', 'Html', 'Widget']);
         if (!empty($vars)) {
             if (empty($vars['use_ssl'])) {
@@ -41,7 +41,7 @@ class Upcloud extends Module
     {
         $this->view = new View('edit_row', 'default');
         $this->view->base_uri = $this->base_uri;
-        $this->view->setDefaultView('components' . DS . 'modules' . DS . 'upcloudvps' . DS);
+        $this->view->setDefaultView('components' . DS . 'modules' . DS . 'upcloud' . DS);
         Loader::loadHelpers($this, ['Form', 'Html', 'Widget']);
         if (empty($vars)) {
             $vars = $module_row->meta;
@@ -140,7 +140,7 @@ class Upcloud extends Module
         try {
             $api = $this->getApi($pass_key, $user_key);
             $result = $api->GetAccountInfo();
-            $this->log('Upcloudvps|accountRequest', serialize($result), 'input', true);
+            $this->log('upcloud|accountRequest', serialize($result), 'input', true);
             if ($result['response_code'] == '200') {
                 return true;
             }
@@ -177,7 +177,7 @@ class Upcloud extends Module
     {
         $api = $this->getApi($module_row->meta->pass_key, $module_row->meta->user_key);
         $result = $api->Getplans()['response']['plans']['plan'];
-       //$this->log('upcloudvps|Getplans', serialize($result), 'input', true);
+       //$this->log('upcloud|Getplans', serialize($result), 'input', true);
         $Vmplans = [];
         foreach ($result as $plan) {
             $PlanDesc = Language::_('Upcloudvps.package.cpu', true) . ': ' . $plan['core_number'] . ' ' . Language::_('Upcloudvps.package.cpu', true) . ' / ' . Language::_('Upcloudvps.package.memory', true) . ': '
@@ -191,7 +191,7 @@ class Upcloud extends Module
     {
         $api = $this->getApi($module_row->meta->pass_key, $module_row->meta->user_key);
         $result_os = $api->GetTemplate()['response']['storages']['storage'];
-       //$this->log('upcloudvps|GetTemplates', serialize($result_os), 'input', true);
+       //$this->log('upcloud|GetTemplates', serialize($result_os), 'input', true);
         $templates = [];
         if ($package) {
             foreach ($result_os as $os) {
@@ -213,7 +213,7 @@ class Upcloud extends Module
     {
         $api = $this->getApi($module_row->meta->pass_key, $module_row->meta->user_key);
         $zones = $api->GetZones()['response']['zones']['zone'];
-    // $this->log('upcloudvps|getLocations', serialize($zones), 'input', true);
+    // $this->log('upcloud|getLocations', serialize($zones), 'input', true);
         $zoneLocation = [];
         foreach ($zones as $zone) {
             $zoneLocation[$zone['id']] = $zone['description'];
@@ -403,17 +403,17 @@ class Upcloud extends Module
 
     public function suspendService($package, $service, $parent_package = null, $parent_service = null)
     {
-        return $this->performServiceAction($service, 'StopServer', 'upcloudvps|suspend');
+        return $this->performServiceAction($service, 'StopServer', 'upcloud|suspend');
     }
 
     public function unsuspendService($package, $service, $parent_package = null, $parent_service = null)
     {
-        return $this->performServiceAction($service, 'StartServer', 'upcloudvps|unsuspend');
+        return $this->performServiceAction($service, 'StartServer', 'upcloud|unsuspend');
     }
 
     public function cancelService($package, $service, $parent_package = null, $parent_service = null)
     {
-        return $this->performServiceAction($service, 'DeleteServernStorage', 'upcloudvps|cancel', '204');
+        return $this->performServiceAction($service, 'DeleteServernStorage', 'upcloud|cancel', '204');
     }
 
     private function performServiceAction($service, $actionName, $logTag, $expectedResponseCode = null)
@@ -554,7 +554,7 @@ class Upcloud extends Module
             return;
         }
         if ($vars['use_module'] == 'true') {
-            $this->log('upcloudvps|create', serialize($params), 'input', true);
+            $this->log('upcloud|create', serialize($params), 'input', true);
 
             try {
                 $api = $this->getApi($row->meta->pass_key, $row->meta->user_key);
@@ -916,7 +916,7 @@ class Upcloud extends Module
         $service_fields = $this->serviceFieldsToObject($service->fields);
         $templates = $this->getTemplates($row, $package);
         $api = $this->getApi($row->meta->pass_key, $row->meta->user_key);
-      //  $this->log('upcloudvps|GetVMInformation', serialize($service_fields), 'input', true);
+      //  $this->log('upcloud|GetVMInformation', serialize($service_fields), 'input', true);
         $vmId = $service_fields->upcloudvps_vmid;
         $server_details = $api->GetServer($vmId)['response']['server'];
 
@@ -952,7 +952,7 @@ class Upcloud extends Module
             if ($action['error']['error_message']) {
                 $this->Input->setErrors(array('api' => array('response' => $action['error']['error_message'])));
             }
-          //      $this->log('upcloudvps|action', serialize($action), 'output', true);
+          //      $this->log('upcloud|action', serialize($action), 'output', true);
         }
 
         foreach ($server_details['storage_devices']['storage_device'] as $temp) {
