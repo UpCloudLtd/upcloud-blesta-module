@@ -9,6 +9,10 @@ class UpcloudvpsApi
     private $curl;
     private $baseurl;
     private $httpHeader = [];
+    private $apiuser;
+    private $apipass;
+    private $blestaVer;
+    private $logger;
     public function __construct(array $params)
     {
         $this->baseurl = "https://api.upcloud.com/1.3/";
