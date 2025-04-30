@@ -245,13 +245,13 @@ class UpcloudvpsApi
         return $this->put('storage/' . $storageId, $body);
     }
 
-    public function DeleteServernStorage($ServerUUID)
+    public function DeleteServerAndStorage($ServerUUID)
     {
         $this->stopServerAndWait($ServerUUID);
         return $this->delete('server/' . $ServerUUID . '?storages=1');
     }
 
-    public function DeleteServernStorageBackup($ServerUUID)
+    public function DeleteServerAndStorageAndBackups($ServerUUID)
     {
         $this->stopServerAndWait($ServerUUID);
         return $this->delete('server/' . $ServerUUID . '?storages=1&backups=delete');
