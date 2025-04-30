@@ -413,7 +413,7 @@ class Upcloud extends Module
 
     public function cancelService($package, $service, $parent_package = null, $parent_service = null)
     {
-        return $this->performServiceAction($service, 'DeleteServernStorage', 'upcloud|cancel', '204');
+        return $this->performServiceAction($service, 'DeleteServerAndStorage', 'upcloud|cancel', '204');
     }
 
     private function performServiceAction($service, $actionName, $logTag, $expectedResponseCode = null)
