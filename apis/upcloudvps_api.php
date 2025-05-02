@@ -39,13 +39,12 @@ class UpcloudvpsApi
         }
 
         curl_setopt_array($call, [
-        CURLOPT_RETURNTRANSFER => true,
-        CURLOPT_USERPWD => $this->apiuser . ':' . $this->apipass,
+            CURLOPT_RETURNTRANSFER => true,
+            CURLOPT_USERPWD => $this->apiuser . ':' . $this->apipass,
         ]);
-// Set HTTP headers
+        // Set HTTP headers
         curl_setopt($call, CURLOPT_HTTPHEADER, array_map(function ($key, $value) {
-
-                return "$key: $value";
+            return "$key: $value";
         }, array_keys($this->httpHeader), $this->httpHeader));
         $response = curl_exec($call);
         $statusCode = curl_getinfo($call, CURLINFO_HTTP_CODE);
@@ -54,7 +53,7 @@ class UpcloudvpsApi
         }
 
         curl_close($call);
-        return ['response_code' => $statusCode,  'response' => json_decode($response, true)];
+        return ['response_code' => $statusCode, 'response' => json_decode($response, true)];
     }
 
     public function get($url)
@@ -144,26 +143,26 @@ class UpcloudvpsApi
         }
 
         $postData = [
-        'server' => [
-          'metadata' => 'yes',
-          'zone' => $params['zone'], // GetZones()
-          'title' => $params['title'], // hostname
-          'hostname' => $params['title'], // hostname
-          'plan' => $PlanName, // Getplans()
-        //  "simple_backup" => "0430,weeklies",
-        'remote_access_enabled' => 'yes',
-          'storage_devices' => [
-              'storage_device' => [
-                  [
-                      'action' => 'clone',
-                      'storage' => $TemplateUUID, // GetTemplates()
-                      'size' => $PlanSize, // storage_size from Getplans()
-                      'tier' => $PlanTier, // storage_tier from Getplans()
-                      'title' => $TemplateTitle, // OS Name
-                  ]
-              ]
-          ]
-        ]
+            'server' => [
+                'metadata' => 'yes',
+                'zone' => $params['zone'], // GetZones()
+                'title' => $params['title'], // hostname
+                'hostname' => $params['title'], // hostname
+                'plan' => $PlanName, // Getplans()
+                //  "simple_backup" => "0430,weeklies",
+                'remote_access_enabled' => 'yes',
+                'storage_devices' => [
+                    'storage_device' => [
+                        [
+                            'action' => 'clone',
+                            'storage' => $TemplateUUID, // GetTemplates()
+                            'size' => $PlanSize, // storage_size from Getplans()
+                            'tier' => $PlanTier, // storage_tier from Getplans()
+                            'title' => $TemplateTitle, // OS Name
+                        ]
+                    ]
+                ]
+            ]
         ];
         return $this->post('server', $postData);
     }
@@ -227,7 +226,7 @@ class UpcloudvpsApi
                 }
             }
             if ($storageId && $planSize > $existingStorageSize) {
-                $modeyStorage =  $this->modifyStorage($storageId, $planSize);
+                $modeyStorage = $this->modifyStorage($storageId, $planSize);
                 $this->StartServer($uuid);
                 return $modeyStorage;
             }
@@ -238,9 +237,9 @@ class UpcloudvpsApi
     public function modifyStorage($storageId, $planSize)
     {
         $body = [
-          'storage' => [
-          'size' => $planSize
-          ]
+            'storage' => [
+                'size' => $planSize
+            ]
         ];
         return $this->put('storage/' . $storageId, $body);
     }
@@ -266,7 +265,7 @@ class UpcloudvpsApi
         }
 
         $times = 0;
-// If VM delete takes time please increase it but when tested working within 45 second
+        // If VM delete takes time please increase it but when tested working within 45 second
         while ($state != 'stopped' && $times < 45) {
             sleep(2);
             $result = $this->GetServer($ServerUUID);
@@ -310,22 +309,22 @@ class UpcloudvpsApi
 
     public function formatSizeBytestoTB($bytes)
     {
-        return   round($bytes / 1024 / 1024 / 1024 / 1024, 2);
+        return round($bytes / 1024 / 1024 / 1024 / 1024, 2);
     }
 
     public function formatSizeBytestoMB($bytes)
     {
-        return   round($bytes / 1024 / 1024, 2);
+        return round($bytes / 1024 / 1024, 2);
     }
 
     public function formatSizeBytestoGB($bytes)
     {
-        return   round($bytes / 1024 / 1024 / 1024, 2);
+        return round($bytes / 1024 / 1024 / 1024, 2);
     }
 
     public function formatSizeMBtoGB($MB)
     {
-        return   round($MB / 1024);
+        return round($MB / 1024);
     }
 
     public function formatBytes($bytes, $precision = 2)
