@@ -114,7 +114,7 @@ class Upcloud extends Module
                     'negate' => true,
                     'message' => Language::_('Upcloudvps.!error.user_key_valid', true)
                 ]
-              ],
+            ],
             'pass_key' => [
                 'valid' => [
                     'last' => true,
@@ -177,11 +177,11 @@ class Upcloud extends Module
     {
         $api = $this->getApi($module_row->meta->pass_key, $module_row->meta->user_key);
         $result = $api->Getplans()['response']['plans']['plan'];
-       //$this->log('upcloud|Getplans', serialize($result), 'input', true);
+        //$this->log('upcloud|Getplans', serialize($result), 'input', true);
         $Vmplans = [];
         foreach ($result as $plan) {
             $PlanDesc = Language::_('Upcloudvps.package.cpu', true) . ': ' . $plan['core_number'] . ' ' . Language::_('Upcloudvps.package.cpu', true) . ' / ' . Language::_('Upcloudvps.package.memory', true) . ': '
-            . $plan['memory_amount'] . Language::_('Upcloudvps.package.MB', true) . ' / ' . Language::_('Upcloudvps.package.disk', true) . ': ' . $plan['storage_size'] . Language::_('Upcloudvps.package.GB', true);
+                . $plan['memory_amount'] . Language::_('Upcloudvps.package.MB', true) . ' / ' . Language::_('Upcloudvps.package.disk', true) . ': ' . $plan['storage_size'] . Language::_('Upcloudvps.package.GB', true);
             $Vmplans[$plan['name']] = $plan['name'] . ' [ ' . $PlanDesc . ' ]';
         }
         return $Vmplans;
@@ -191,18 +191,18 @@ class Upcloud extends Module
     {
         $api = $this->getApi($module_row->meta->pass_key, $module_row->meta->user_key);
         $result_os = $api->GetTemplate()['response']['storages']['storage'];
-       //$this->log('upcloud|GetTemplates', serialize($result_os), 'input', true);
+        //$this->log('upcloud|GetTemplates', serialize($result_os), 'input', true);
         $templates = [];
         if ($package) {
             foreach ($result_os as $os) {
                 if (strpos($os['title'], 'Windows') !== false || strpos($os['title'], 'UpCloud') !== false) {
                     continue;
                 }
-                $templates[$os['uuid']] =  $os['title'];
+                $templates[$os['uuid']] = $os['title'];
             }
         } else {
             foreach ($result_os as $os) {
-                $templates[$os['uuid']] =  $os['title'];
+                $templates[$os['uuid']] = $os['title'];
             }
         }
 
@@ -213,7 +213,7 @@ class Upcloud extends Module
     {
         $api = $this->getApi($module_row->meta->pass_key, $module_row->meta->user_key);
         $zones = $api->GetZones()['response']['zones']['zone'];
-    // $this->log('upcloud|getLocations', serialize($zones), 'input', true);
+        // $this->log('upcloud|getLocations', serialize($zones), 'input', true);
         $zoneLocation = [];
         foreach ($zones as $zone) {
             $zoneLocation[$zone['id']] = $zone['description'];
@@ -578,7 +578,7 @@ class Upcloud extends Module
             }
             foreach ($server['response']['server']['ip_addresses']['ip_address'] as $IPList) {
                 if ($IPList['access'] == "public") {
-                    if ($IPList['family'] == "IPv4" && ($IPList['part_of_plan'] )) {
+                    if ($IPList['family'] == "IPv4" && ($IPList['part_of_plan'])) {
                         $IPv4 = $IPList['address'];
                     }
                 }
@@ -916,7 +916,7 @@ class Upcloud extends Module
         $service_fields = $this->serviceFieldsToObject($service->fields);
         $templates = $this->getTemplates($row, $package);
         $api = $this->getApi($row->meta->pass_key, $row->meta->user_key);
-      //  $this->log('upcloud|GetVMInformation', serialize($service_fields), 'input', true);
+        //  $this->log('upcloud|GetVMInformation', serialize($service_fields), 'input', true);
         $vmId = $service_fields->upcloudvps_vmid;
         $server_details = $api->GetServer($vmId)['response']['server'];
 
@@ -952,7 +952,7 @@ class Upcloud extends Module
             if ($action['error']['error_message']) {
                 $this->Input->setErrors(['api' => ['response' => $action['error']['error_message']]]);
             }
-          //      $this->log('upcloud|action', serialize($action), 'output', true);
+            //      $this->log('upcloud|action', serialize($action), 'output', true);
         }
 
         foreach ($server_details['storage_devices']['storage_device'] as $temp) {
@@ -976,7 +976,7 @@ class Upcloud extends Module
         if (!empty($server_details["ip_addresses"])) {
             foreach ($server_details['ip_addresses']['ip_address'] as $ip) {
                 if ($ip["access"] == "public") {
-                    $ipaddress[$ip['address']] =  $ip['address'];
+                    $ipaddress[$ip['address']] = $ip['address'];
                 }
                 if ($ip["family"] == "IPv4" && $ip["access"] == "public" && $ip["part_of_plan"] == "yes") {
                     $server_details['ipaddv4'] = $ip['address'];
@@ -1008,16 +1008,16 @@ class Upcloud extends Module
 
         foreach ($api->Getplans()['response']['plans']['plan'] as $Plan) {
             if ($Plan['name'] == $server_details['plan'] and $Plan['memory_amount'] == $server_details['memory_amount']) {
-                $TotalTraffic = $Plan['public_traffic_out'] ;
+                $TotalTraffic = $Plan['public_traffic_out'];
                 $Outgoing = $api->formatSizeBytestoGB($server_details['plan_ipv4_bytes'] + $server_details['plan_ipv6_bytes']);
-                $Percentage = round((($Outgoing / $TotalTraffic) * 100), 2) ;
+                $Percentage = round((($Outgoing / $TotalTraffic) * 100), 2);
                 $progressClass = 'progress-bar-success';
                 if ($Percentage >= 49 && $Percentage < 70) {
-                           $progressClass = 'progress-bar-info';
+                    $progressClass = 'progress-bar-info';
                 } elseif ($Percentage >= 70 && $Percentage < 86) {
-                        $progressClass = 'progress-bar-warning';
+                    $progressClass = 'progress-bar-warning';
                 } elseif ($Percentage >= 86) {
-                     $progressClass = 'progress-bar-danger';
+                    $progressClass = 'progress-bar-danger';
                 }
 
                 $server_details['Bandwidth'] = '<div class="progress">
@@ -1053,10 +1053,10 @@ class Upcloud extends Module
         $password = '';
 
         for ($i = 0; $i < 8; $i++) {
-                $password .= $pool[mt_rand(0, $pool_size - 1)];
+            $password .= $pool[mt_rand(0, $pool_size - 1)];
         }
 
-                return $password;
+        return $password;
     }
 
     public function changeServicePackage($package_from, $package_to, $service, $parent_package = null, $parent_service = null)
