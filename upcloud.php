@@ -221,6 +221,7 @@ class Upcloud extends Module
         $params = [
             'apiToken' => $api_token,
             'blestaVer' => $blestaVer
+            'moduleVer' => $this->config->version,
         ];
         $api = new UpcloudvpsApi($params);
         return $api;

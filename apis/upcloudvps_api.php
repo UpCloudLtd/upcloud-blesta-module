@@ -23,6 +23,10 @@ class UpcloudvpsApi
      */
     private $blestaVer;
     /**
+     * @var string The module version
+     */
+    private $moduleVer;
+    /**
      * @var \Psr\Log\LoggerInterface The logger instance
      */
     private $logger;
@@ -32,6 +36,7 @@ class UpcloudvpsApi
      *
      * @param array $params API connection parameters including:
      *  - apiToken (string) The API token
+     *  - moduleVer (string) The current module version
      *  - blestaVer (string) The current Blesta version
      */
     public function __construct(array $params)
@@ -39,6 +44,7 @@ class UpcloudvpsApi
         $this->baseurl = "https://api.upcloud.com/1.3/";
         $this->blestaVer = $params['blestaVer'];
         $this->setHttpHeader('Authorization', 'Bearer ' . $params['apiToken']);
+        $this->moduleVer = $params['moduleVer'];
         $logger = $this->getFromContainer('logger');
         $this->logger = $logger;
     }
@@ -72,7 +78,10 @@ class UpcloudvpsApi
             $this->setHttpHeader('Content-Type', 'application/json');
         }
 
-        curl_setopt($call, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt_array($call, [
+            CURLOPT_USERAGENT => 'upcloud-blesta-module/' . $this->moduleVer,
+            CURLOPT_RETURNTRANSFER => true,
+        ]);
         // Set HTTP headers
         curl_setopt($call, CURLOPT_HTTPHEADER, array_map(function ($key, $value) {
             return "$key: $value";
