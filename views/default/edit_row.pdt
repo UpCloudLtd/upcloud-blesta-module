@@ -19,14 +19,8 @@ $this->Widget->create($this->_('Upcloudvps.edit_row.box_title', true));
             </li>
             <li>
                 <?php
-                $this->Form->label($this->_('Upcloudvps.row_meta.user_key', true), 'user_key');
-                $this->Form->fieldText('user_key', (isset($vars->user_key) ? $vars->user_key : null));
-                ?>
-            </li>
-            <li>
-                <?php
-                $this->Form->label($this->_('Upcloudvps.row_meta.pass_key', true), 'pass_key');
-                $this->Form->fieldText('pass_key', (isset($vars->pass_key) ? $vars->pass_key : null));
+                $this->Form->label($this->_('Upcloudvps.row_meta.api_token', true), 'api_token');
+                $this->Form->fieldText('api_token', (isset($vars->api_token) ? $vars->api_token : null));
                 ?>
             </li>
         </ul>

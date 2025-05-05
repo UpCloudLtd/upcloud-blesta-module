@@ -19,14 +19,6 @@ class UpcloudvpsApi
      */
     private $httpHeader = [];
     /**
-     * @var string The API username
-     */
-    private $apiuser;
-    /**
-     * @var string The API password
-     */
-    private $apipass;
-    /**
      * @var string The Blesta version
      */
     private $blestaVer;
@@ -39,16 +31,14 @@ class UpcloudvpsApi
      * Constructor.
      *
      * @param array $params API connection parameters including:
-     *  - apiuser (string) The API username
-     *  - apipass (string) The API password
+     *  - apiToken (string) The API token
      *  - blestaVer (string) The current Blesta version
      */
     public function __construct(array $params)
     {
         $this->baseurl = "https://api.upcloud.com/1.3/";
         $this->blestaVer = $params['blestaVer'];
-        $this->apiuser = $params['apiuser'];
-        $this->apipass = $params['apipass'];
+        $this->setHttpHeader('Authorization', 'Bearer ' . $params['apiToken']);
         $logger = $this->getFromContainer('logger');
         $this->logger = $logger;
     }
@@ -82,10 +72,7 @@ class UpcloudvpsApi
             $this->setHttpHeader('Content-Type', 'application/json');
         }
 
-        curl_setopt_array($call, [
-            CURLOPT_RETURNTRANSFER => true,
-            CURLOPT_USERPWD => $this->apiuser . ':' . $this->apipass,
-        ]);
+        curl_setopt($call, CURLOPT_RETURNTRANSFER, true);
         // Set HTTP headers
         curl_setopt($call, CURLOPT_HTTPHEADER, array_map(function ($key, $value) {
             return "$key: $value";
