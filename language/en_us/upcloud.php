@@ -21,8 +21,7 @@ $lang['Upcloudvps.edit_row.box_title'] = 'Edit UpCloud Server';
 $lang['Upcloudvps.edit_row.basic_title'] = 'Basic Settings';
 $lang['Upcloudvps.edit_row.edit_btn'] = 'Edit Server';
 $lang['Upcloudvps.row_meta.account_name'] = 'Account Name';
-$lang['Upcloudvps.row_meta.pass_key'] = 'API User Password';
-$lang['Upcloudvps.row_meta.user_key'] = 'API User Name';
+$lang['Upcloudvps.row_meta.api_token'] = 'API Token';
 $lang['Upcloudvps.module_row'] = 'Account';
 $lang['Upcloudvps.module_row_plural'] = 'Accounts';
 $lang['Upcloudvps.description'] = 'The UpCloud module make UpCloud VPS management simple and intuitive. Common tasks such as a ordering VPS, Start, Stop, Reboot, Change Password, View Data Usage are only a few clicks away.';
@@ -48,10 +47,9 @@ $lang['Upcloudvps.package.disk'] = 'Disk';
 
 // Errors
 $lang['Upcloudvps.!error.account_name_valid'] = 'Please enter a valid Account Name.';
-$lang['Upcloudvps.!error.pass_key_valid'] = 'The API User Password appears to be invalid.';
-$lang['Upcloudvps.!error.user_key_valid'] = 'The API User appears to be invalid.';
+$lang['Upcloudvps.!error.api_token_valid'] = 'The API Token appears to be invalid.';
 $lang['Upcloudvps.!error.license_key_valid'] = 'The License Key appears to be invalid.';
-$lang['Upcloudvps.!error.pass_key_valid_connection'] = 'A connection to the server could not be established. Please check to ensure that the API details are correct.';
+$lang['Upcloudvps.!error.api_token_valid_connection'] = 'A connection to the server could not be established. Please check to ensure that the API details are correct.';
 $lang['Upcloudvps.!error.meta[server_plan].format'] = 'Please select a valid VPS Plan.';
 $lang['Upcloudvps.!error.module_row.missing'] = 'An internal error occurred. The module row is unavailable.';
 $lang['Upcloudvps.!error.upcloudvps_hostname.format'] = 'Please enter a valid hostname, e.g. domain.com.';
