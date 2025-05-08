@@ -44,7 +44,7 @@ class UpcloudvpsApi
         $this->baseurl = "https://api.upcloud.com/1.3/";
         $this->blestaVer = $params['blestaVer'];
         $this->setHttpHeader('Authorization', 'Bearer ' . $params['apiToken']);
-        $this->moduleVer = $params['moduleVer'];
+        $this->moduleVer = $params['moduleVer'] ?? 'dev';
         $logger = $this->getFromContainer('logger');
         $this->logger = $logger;
     }
