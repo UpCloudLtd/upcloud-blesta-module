@@ -9,7 +9,7 @@ plugins:
     - replacements:
         - files:
             - config.json
-          from: '"version": ".+?"''
+          from: '"version": ".+?"'
           to: '"version": "${nextRelease.version}"'
           results:
             - file: config.json
