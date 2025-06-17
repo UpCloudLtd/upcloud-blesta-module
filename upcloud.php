@@ -83,8 +83,7 @@ class Upcloud extends Module
      *
      * @param array &$vars An array of input data including:
      *  - account_name (string) The account name
-     *  - user_key (string) The UpCloud API username
-     *  - pass_key (string) The UpCloud API password
+     *  - api_token (string) The API token
      * @return array An array of meta fields to be stored for the module row
      */
     public function addModuleRow(array &$vars)
@@ -113,8 +112,7 @@ class Upcloud extends Module
      * @param stdClass $module_row The module row to edit
      * @param array &$vars An array of input data including:
      *  - account_name (string) The account name
-     *  - user_key (string) The UpCloud API username
-     *  - pass_key (string) The UpCloud API password
+     *  - api_token (string) The API token
      * @return array An array of meta fields to be stored for the module row
      */
     public function editModuleRow($module_row, array &$vars)
