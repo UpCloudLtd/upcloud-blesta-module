@@ -45,11 +45,6 @@ class Upcloud extends Module
         $this->view->base_uri = $this->base_uri;
         $this->view->setDefaultView('components' . DS . 'modules' . DS . 'upcloud' . DS);
         Loader::loadHelpers($this, ['Form', 'Html', 'Widget']);
-        if (!empty($vars)) {
-            if (empty($vars['use_ssl'])) {
-                $vars['use_ssl'] = 'false';
-            }
-        }
         $this->view->set('vars', (object) $vars);
         return $this->view->fetch();
     }
@@ -69,10 +64,6 @@ class Upcloud extends Module
         Loader::loadHelpers($this, ['Form', 'Html', 'Widget']);
         if (empty($vars)) {
             $vars = $module_row->meta;
-        } else {
-            if (empty($vars['use_ssl'])) {
-                $vars['use_ssl'] = 'false';
-            }
         }
         $this->view->set('vars', (object) $vars);
         return $this->view->fetch();
@@ -119,9 +110,6 @@ class Upcloud extends Module
     {
         $meta_fields = ['account_name', 'api_token', 'api_base_url'];
         $encrypted_fields = ['api_token'];
-        if (empty($vars['use_ssl'])) {
-            $vars['use_ssl'] = 'false';
-        }
         $this->Input->setRules($this->getRowRules($vars));
         if ($this->Input->validates($vars)) {
             $meta = [];
