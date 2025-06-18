@@ -4,6 +4,10 @@
     "description": "Upcloudvps.description",
     "authors": [
         {
+            "name": "UpCloud",
+            "url": "https://upcloud.com/contact/"
+        },
+        {
             "name": "WHMCSModule Networks",
             "url": "https://www.whmcsmodule.net"
         }
