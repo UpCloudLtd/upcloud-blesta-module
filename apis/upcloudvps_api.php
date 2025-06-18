@@ -221,7 +221,7 @@ class UpcloudvpsApi
      */
     public function GetServer($ServerUUID)
     {
-        return $this->get('server/' . $ServerUUID);
+        return $this->get('server/' . rawurlencode($ServerUUID));
     }
 
     /**
@@ -305,7 +305,7 @@ class UpcloudvpsApi
             $data[$action . '_server']['stop_type'] = $stop_type;
             $data[$action . '_server']['timeout'] = "60";
         }
-        return $this->post('server/' . $ServerUUID . '/' . $action, $data);
+        return $this->post(sprintf('server/%s/%s', rawurlencode($ServerUUID), rawurlencode($action)), $data);
     }
 
     /**
@@ -360,7 +360,7 @@ class UpcloudvpsApi
      */
     public function DeleteServer($ServerUUID)
     {
-        return $this->delete('server/' . $ServerUUID);
+        return $this->delete('server/' . rawurlencode($ServerUUID));
     }
 
     /**
@@ -382,7 +382,7 @@ class UpcloudvpsApi
             }
         }
 
-        $upgradePlan = $this->put('server/' . $uuid, ['server' => ['plan' => $Plan]]);
+        $upgradePlan = $this->put('server/' . rawurlencode($uuid), ['server' => ['plan' => $Plan]]);
         if ($upgradePlan['response']['error']['error_message']) {
             return $upgradePlan;
         } else {
@@ -417,7 +417,7 @@ class UpcloudvpsApi
                 'size' => $planSize
             ]
         ];
-        return $this->put('storage/' . $storageId, $body);
+        return $this->put('storage/' . rawurlencode($storageId), $body);
     }
 
     /**
@@ -430,7 +430,7 @@ class UpcloudvpsApi
     public function DeleteServerAndStorage($ServerUUID)
     {
         $this->stopServerAndWait($ServerUUID);
-        return $this->delete('server/' . $ServerUUID . '?storages=1');
+        return $this->delete(sprintf('server/%s?storages=1', rawurlencode($ServerUUID)));
     }
 
     /**
@@ -443,7 +443,7 @@ class UpcloudvpsApi
     public function DeleteServerAndStorageAndBackups($ServerUUID)
     {
         $this->stopServerAndWait($ServerUUID);
-        return $this->delete('server/' . $ServerUUID . '?storages=1&backups=delete');
+        return $this->delete(sprintf('server/%s?storages=1&backups=delete', rawurlencode($ServerUUID)));
     }
 
     /**
@@ -481,7 +481,7 @@ class UpcloudvpsApi
      */
     public function GetIPaddress($IPAddress)
     {
-        return $this->get('ip_address/' . $IPAddress);
+        return $this->get('ip_address/' . rawurlencode($IPAddress));
     }
 
     /**
@@ -497,7 +497,7 @@ class UpcloudvpsApi
         if (!($this->GetIPaddress($IP)['response']['ip_address']['server'] == $instanceId)) {
             $this->logger->error('IP does not belong to your server');
         }
-        return $this->put('ip_address/' . $IP, ['ip_address' => ['ptr_record' => $ptr_record]]);
+        return $this->put('ip_address/' . rawurlencode($IP), ['ip_address' => ['ptr_record' => $ptr_record]]);
     }
 
 
@@ -510,7 +510,7 @@ class UpcloudvpsApi
      */
     public function vncPasswordUpdate($instanceId, $vncPass)
     {
-        return $this->put('server/' . $instanceId, ['server' => ['remote_access_password' => $vncPass]]);
+        return $this->put('server/' . rawurlencode($instanceId), ['server' => ['remote_access_password' => $vncPass]]);
     }
 
     /**
@@ -522,7 +522,7 @@ class UpcloudvpsApi
      */
     public function vncEnableDisable($instanceId, $vncType)
     {
-        return $this->put('server/' . $instanceId, ['server' => ['remote_access_enabled' => $vncType]]);
+        return $this->put('server/' . rawurlencode($instanceId), ['server' => ['remote_access_enabled' => $vncType]]);
     }
 
     /**
@@ -534,7 +534,7 @@ class UpcloudvpsApi
      */
     public function modifyVPS($instanceId, $serverConfig)
     {
-        return $this->put('server/' . $instanceId, $serverConfig);
+        return $this->put('server/' . rawurlencode($instanceId), $serverConfig);
     }
 
     /**
