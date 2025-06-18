@@ -538,28 +538,6 @@ class UpcloudvpsApi
     }
 
     /**
-     * Formats bytes to Terabytes (TB) with 2 decimal places.
-     *
-     * @param int $bytes The number of bytes
-     * @return float The value in TB
-     */
-    public function formatSizeBytestoTB($bytes)
-    {
-        return round($bytes / 1024 / 1024 / 1024 / 1024, 2);
-    }
-
-    /**
-     * Formats bytes to Megabytes (MB) with 2 decimal places.
-     *
-     * @param int $bytes The number of bytes
-     * @return float The value in MB
-     */
-    public function formatSizeBytestoMB($bytes)
-    {
-        return round($bytes / 1024 / 1024, 2);
-    }
-
-    /**
      * Formats bytes to Gigabytes (GB) with 2 decimal places.
      *
      * @param int $bytes The number of bytes
@@ -568,55 +546,5 @@ class UpcloudvpsApi
     public function formatSizeBytestoGB($bytes)
     {
         return round($bytes / 1024 / 1024 / 1024, 2);
-    }
-
-    /**
-     * Formats Megabytes (MB) to Gigabytes (GB) with 2 decimal places.
-     *
-     * @param int $MB The number of Megabytes
-     * @return float The value in GB
-     */
-    public function formatSizeMBtoGB($MB)
-    {
-        return round($MB / 1024);
-    }
-
-    /**
-     * Formats bytes into a human-readable string with appropriate units (B, KB, MB, GB, TB).
-     *
-     * @param int $bytes The number of bytes
-     * @param int $precision The number of decimal places (default: 2)
-     * @return string The formatted size string (e.g., "1.23 GB")
-     */
-    public function formatBytes($bytes, $precision = 2)
-    {
-        $unit = ["B", "KB", "MB", "GB", "TB"];
-        $exp = floor(log($bytes, 1024)) | 0;
-        return round($bytes / (pow(1024, $exp)), $precision) . ' ' . $unit[$exp];
-    }
-
-    /**
-     * Attempts to get the client's real IP address by checking various $_SERVER variables.
-     * Handles proxy headers and comma-separated values.
-     *
-     * @return string The client's IP address or 'UNKNOWN' if not found
-     */
-    public function getClientIp()
-    {
-        $ip_address = '';
-        if (getenv('HTTP_CLIENT_IP')) {
-            $ip_address = getenv('HTTP_CLIENT_IP');
-        } elseif (getenv('HTTP_X_FORWARDED_FOR')) {
-            $ip_address = getenv('HTTP_X_FORWARDED_FOR');
-        } elseif (getenv('HTTP_X_FORWARDED')) {
-            $ip_address = getenv('HTTP_X_FORWARDED');
-        } elseif (getenv('HTTP_FORWARDED_FOR')) {
-            $ip_address = getenv('HTTP_FORWARDED_FOR');
-        } elseif (getenv('HTTP_FORWARDED')) {
-            $ip_address = getenv('HTTP_FORWARDED');
-        } else {
-            $ip_address = getenv('REMOTE_ADDR');
-        }
-        return $ip_address;
     }
 }
