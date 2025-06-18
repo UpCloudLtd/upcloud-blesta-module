@@ -35,13 +35,14 @@ class UpcloudvpsApi
      * Constructor.
      *
      * @param array $params API connection parameters including:
+     *  - baseUrl (string) The API base URL
      *  - apiToken (string) The API token
      *  - moduleVer (string) The current module version
      *  - blestaVer (string) The current Blesta version
      */
     public function __construct(array $params)
     {
-        $this->baseurl = "https://api.upcloud.com/1.3/";
+        $this->baseurl = $params['baseUrl'];
         $this->blestaVer = $params['blestaVer'];
         $this->setHttpHeader('Authorization', 'Bearer ' . $params['apiToken']);
         $this->moduleVer = $params['moduleVer'] ?? 'dev';

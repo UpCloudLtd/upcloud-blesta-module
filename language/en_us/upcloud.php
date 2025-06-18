@@ -22,6 +22,7 @@ $lang['Upcloudvps.edit_row.basic_title'] = 'Basic Settings';
 $lang['Upcloudvps.edit_row.edit_btn'] = 'Edit Server';
 $lang['Upcloudvps.row_meta.account_name'] = 'Account Name';
 $lang['Upcloudvps.row_meta.api_token'] = 'API Token';
+$lang['Upcloudvps.row_meta.api_base_url'] = 'API Base URL (optional)';
 $lang['Upcloudvps.module_row'] = 'Account';
 $lang['Upcloudvps.module_row_plural'] = 'Accounts';
 $lang['Upcloudvps.description'] = 'The UpCloud module make UpCloud VPS management simple and intuitive. Common tasks such as a ordering VPS, Start, Stop, Reboot, Change Password, View Data Usage are only a few clicks away.';
