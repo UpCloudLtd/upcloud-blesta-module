@@ -1,7 +1,7 @@
 {
     "name": "blesta/upcloud",
     "description": "UpCloud VPS",
-    "license": "proprietary",
+    "license": "MIT",
     "type": "blesta-module",
     "require": {
         "blesta/composer-installer": "~1.0"
