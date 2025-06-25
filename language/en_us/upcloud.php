@@ -61,10 +61,6 @@ $lang['Upcloudvps.!error.api.internal'] = 'An internal error occurred, or the se
 $lang['Upcloudvps.!error.api.server_locked'] = 'Unable to complete action.  Server is currently locked.';
 
 // Package fields
-$lang['Upcloudvps.package_fields.server_type'] = 'Server Type';
-$lang['Upcloudvps.package_fields.server_type.baremetal'] = 'Bare Metal';
-$lang['Upcloudvps.package_fields.server_type.server'] = 'Virtual Machine';
-$lang['Upcloudvps.package_fields.baremetal_plan'] = 'Bare Metal Plan';
 $lang['Upcloudvps.package_fields.server_plan'] = 'Server Plan';
 $lang['Upcloudvps.package_fields.set_template'] = 'Set Template';
 $lang['Upcloudvps.package_fields.admin_set_template'] = 'Select a template';
