@@ -8,8 +8,8 @@ The UpCloud Blesta Module provides seamless integration between Blesta billing s
 
 ## Requirements
 
-- **Blesta**: Version 4.0 or higher
-- **PHP**: Version 7.4 or higher
+- **Blesta**: Version 5.10 or higher
+- **PHP**: Version 7.2 or higher
 - **UpCloud Account**: Active UpCloud account with API access
 
 ## Installation & configuration
