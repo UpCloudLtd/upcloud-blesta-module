@@ -19,7 +19,7 @@ jobs:
           key: ${{ runner.os }}-composer-${{ hashFiles('**/composer.lock') }}
           restore-keys: |
             ${{ runner.os }}-composer-
-      - run: composer install
+      - run: composer --ansi install
       - name: Run phpcbf
         run: |
           set -x +e
