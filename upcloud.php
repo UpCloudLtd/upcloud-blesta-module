@@ -45,11 +45,6 @@ class Upcloud extends Module
         $this->view->base_uri = $this->base_uri;
         $this->view->setDefaultView('components' . DS . 'modules' . DS . 'upcloud' . DS);
         Loader::loadHelpers($this, ['Form', 'Html', 'Widget']);
-        if (!empty($vars)) {
-            if (empty($vars['use_ssl'])) {
-                $vars['use_ssl'] = 'false';
-            }
-        }
         $this->view->set('vars', (object) $vars);
         return $this->view->fetch();
     }
@@ -69,10 +64,6 @@ class Upcloud extends Module
         Loader::loadHelpers($this, ['Form', 'Html', 'Widget']);
         if (empty($vars)) {
             $vars = $module_row->meta;
-        } else {
-            if (empty($vars['use_ssl'])) {
-                $vars['use_ssl'] = 'false';
-            }
         }
         $this->view->set('vars', (object) $vars);
         return $this->view->fetch();
@@ -88,7 +79,7 @@ class Upcloud extends Module
      */
     public function addModuleRow(array &$vars)
     {
-        $meta_fields = ['account_name', 'api_token'];
+        $meta_fields = ['account_name', 'api_token', 'api_base_url'];
         $encrypted_fields = ['api_token'];
         $this->Input->setRules($this->getRowRules($vars));
         if ($this->Input->validates($vars)) {
@@ -117,11 +108,8 @@ class Upcloud extends Module
      */
     public function editModuleRow($module_row, array &$vars)
     {
-        $meta_fields = ['account_name', 'api_token'];
+        $meta_fields = ['account_name', 'api_token', 'api_base_url'];
         $encrypted_fields = ['api_token'];
-        if (empty($vars['use_ssl'])) {
-            $vars['use_ssl'] = 'false';
-        }
         $this->Input->setRules($this->getRowRules($vars));
         if ($this->Input->validates($vars)) {
             $meta = [];
@@ -165,7 +153,7 @@ class Upcloud extends Module
                 'valid_connection' => [
                     'rule' => [
                         [$this, 'validateConnection'],
-                        $vars['api_token'],
+                        $vars['api_base_url'],
                     ],
                     'message' => Language::_('Upcloudvps.!error.api_token_valid_connection', true)
                 ]
@@ -179,12 +167,13 @@ class Upcloud extends Module
      * Validates the connection to the UpCloud API using provided credentials.
      *
      * @param string $api_token The UpCloud API token
+     * @param string $api_base_url The UpCloud API base URL
      * @return bool True if the connection is successful, false otherwise
      */
-    public function validateConnection($api_token)
+    public function validateConnection($api_token, $api_base_url)
     {
         try {
-            $api = $this->getApi($api_token);
+            $api = $this->getApi($api_token, $api_base_url);
             $result = $api->GetAccountInfo();
             $this->log('upcloud|accountRequest', serialize($result), 'input', true);
             if ($result['response_code'] == '200') {
@@ -199,9 +188,10 @@ class Upcloud extends Module
      * Initializes and returns an instance of the UpcloudvpsApi.
      *
      * @param string $api_token The UpCloud API token
+     * @param string $api_base_url The UpCloud API base URL (optional)
      * @return UpcloudvpsApi An instance of the UpCloud API wrapper
      */
-    private function getApi($api_token)
+    private function getApi($api_token, $api_base_url = null)
     {
         Loader::load(dirname(__FILE__) . DS . 'apis' . DS . 'upcloudvps_api.php');
         Loader::loadComponents($this, ['Record']);
@@ -217,6 +207,7 @@ class Upcloud extends Module
         }
         $blestaVer = $setting->value;
         $params = [
+            'baseUrl' => empty($api_base_url) ? 'https://api.upcloud.com/1.3/' : $api_base_url,
             'apiToken' => $api_token,
             'blestaVer' => $blestaVer,
             'moduleVer' => $this->config->version,
@@ -233,7 +224,7 @@ class Upcloud extends Module
      */
     private function getServerPlans($module_row)
     {
-        $api = $this->getApi($module_row->meta->api_token);
+        $api = $this->getApi($module_row->meta->api_token, $module_row->meta->api_base_url);
         $result = $api->Getplans()['response']['plans']['plan'];
         //$this->log('upcloud|Getplans', serialize($result), 'input', true);
         $Vmplans = [];
@@ -255,7 +246,7 @@ class Upcloud extends Module
      */
     private function getTemplates($module_row, $package = null)
     {
-        $api = $this->getApi($module_row->meta->api_token);
+        $api = $this->getApi($module_row->meta->api_token, $module_row->meta->api_base_url);
         $result_os = $api->GetTemplate()['response']['storages']['storage'];
         //$this->log('upcloud|GetTemplates', serialize($result_os), 'input', true);
         $templates = [];
@@ -283,7 +274,7 @@ class Upcloud extends Module
      */
     private function getLocations($module_row)
     {
-        $api = $this->getApi($module_row->meta->api_token);
+        $api = $this->getApi($module_row->meta->api_token, $module_row->meta->api_base_url);
         $zones = $api->GetZones()['response']['zones']['zone'];
         // $this->log('upcloud|getLocations', serialize($zones), 'input', true);
         $zoneLocation = [];
@@ -556,7 +547,7 @@ class Upcloud extends Module
     {
         $module_row = $this->getModuleRow();
         if ($module_row) {
-            $api = $this->getApi($module_row->meta->api_token);
+            $api = $this->getApi($module_row->meta->api_token, $module_row->meta->api_base_url);
             $service_fields = $this->serviceFieldsToObject($service->fields);
             $vmId = $service_fields->upcloudvps_vmid;
             //$this->log($logTag, serialize(['vm_id' => $vmId]), 'input', true);
@@ -749,7 +740,7 @@ class Upcloud extends Module
             $this->log('upcloud|create', serialize($params), 'input', true);
 
             try {
-                $api = $this->getApi($row->meta->api_token);
+                $api = $this->getApi($row->meta->api_token, $row->meta->api_base_url);
                 if (empty($vars['upcloudvps_vmid'])) {
                     $server = $api->CreateServer($params);
                     $this->log('upcloud', serialize($server), 'output', true);
@@ -869,7 +860,7 @@ class Upcloud extends Module
             }
         }
         if ($vars['use_module'] == 'true' && !isset($delta['upcloudvps_vmid'])) {
-            $api = $this->getApi($row->meta->api_token);
+            $api = $this->getApi($row->meta->api_token, $row->meta->api_base_url);
             if ($this->Input->errors()) {
                 return;
             }
@@ -1071,7 +1062,7 @@ class Upcloud extends Module
     {
         $row = $this->getModuleRow();
         $service_fields = $this->serviceFieldsToObject($service->fields);
-        $api = $this->getApi($row->meta->api_token);
+        $api = $this->getApi($row->meta->api_token, $row->meta->api_base_url);
         $response = $api->GetServer($service_fields->upcloudvps_vmid)['response']['server'];
         $server_details = $response ?? (object) [];
         $this->view = new View($client ? 'client_service_info' : 'admin_service_info', 'default');
@@ -1216,7 +1207,7 @@ class Upcloud extends Module
         Loader::loadModels($this, ['Services']);
         $service_fields = $this->serviceFieldsToObject($service->fields);
         $templates = $this->getTemplates($row, $package);
-        $api = $this->getApi($row->meta->api_token);
+        $api = $this->getApi($row->meta->api_token, $row->meta->api_base_url);
         //  $this->log('upcloud|GetVMInformation', serialize($service_fields), 'input', true);
         $vmId = $service_fields->upcloudvps_vmid;
         $server_details = $api->GetServer($vmId)['response']['server'];
@@ -1379,7 +1370,7 @@ class Upcloud extends Module
     public function changeServicePackage($package_from, $package_to, $service, $parent_package = null, $parent_service = null)
     {
         if (($row = $this->getModuleRow())) {
-            $api = $this->getApi($row->meta->api_token);
+            $api = $this->getApi($row->meta->api_token, $row->meta->api_base_url);
             if ($package_from->meta->server_plan != $package_to->meta->server_plan) {
                 $service_fields = $this->serviceFieldsToObject($service->fields);
                 $action = $api->ModifyServer($service_fields->upcloudvps_vmid, $package_to->meta->server_plan);

@@ -23,6 +23,12 @@ $this->Widget->create($this->_('Upcloudvps.edit_row.box_title', true));
                 $this->Form->fieldText('api_token', (isset($vars->api_token) ? $vars->api_token : null));
                 ?>
             </li>
+            <li>
+                <?php
+                $this->Form->label($this->_('Upcloudvps.row_meta.api_base_url', true), 'api_base_url');
+                $this->Form->fieldText('api_base_url', (isset($vars->api_base_url) ? $vars->api_base_url : null));
+                ?>
+            </li>
         </ul>
     </div>
 
