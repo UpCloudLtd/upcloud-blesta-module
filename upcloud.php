@@ -449,9 +449,6 @@ class Upcloud extends Module
                 ]
             ]
         ];
-        if ($vars['meta']['server_type']) {
-            unset($rules['meta[server_plan]']);
-        }
         return $rules;
     }
 

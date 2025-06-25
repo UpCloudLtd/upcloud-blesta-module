@@ -26,7 +26,6 @@
     },
     "email_tags": {
       "module": ["server_name", "host_name"],
-      "package": ["server_type"],
       "service": ["upcloudvps_hostname", "upcloudvps_password", "upcloudvps_ipaddress"]
     }
 }
