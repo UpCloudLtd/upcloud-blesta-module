@@ -18,7 +18,7 @@ For comprehensive installation instructions, see [INSTALL.md](INSTALL.md).
 
 ## Contributing
 
-Contributions to the UpCloud WHMCS module are welcome. To contribute:
+Contributions to the module are welcome. To contribute:
 
 1. Fork the repository
 2. Create a feature branch (`git checkout -b feature/amazing-feature`)

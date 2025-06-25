@@ -13,7 +13,7 @@ This guide will walk you through the process of installing and configuring the U
 
 ### Obtaining API Credentials
 
-The Blesta module uses UpCloud API tokens for interacting with the cloud platform.
+The module uses API tokens for interacting with the UpCloud platform.
 
 Follow the instructions first to [install the upctl command-line tool](https://upcloudltd.github.io/upcloud-cli/) to your machine.
 
@@ -36,26 +36,24 @@ Then proceed with the instructions to [create a token](https://upcloudltd.github
 ### Creating a Package Group
 
 1. Navigate to **Packages** > **Package Groups** in your Blesta admin panel.
-2. Click **Create Group** to create a new package group.
+2. Click **Create Group** (the `[+]` icon) to create a new package group.
 3. Provide the following details:
    - **Name**: Enter a descriptive name (e.g., "UpCloud VPS Plans")
    - **Description**: Optional description for internal use
    - **Type**: Select "Standard"
 4. Configure other settings as needed for your business requirements.
-5. Click **Save** to create the package group.
+5. Click **Create Group** to create the package group.
 
 ### Creating a New Package
 
 1. Navigate to **Packages** > **Packages**
-2. Click **Create Package**
+2. Click **Create Package** (the `[+]` icon)
 2. Configure the basic package details:
    - **Name**: Provide a descriptive package name (e.g., "UpCloud VPS - 2GB RAM")
    - **Description**: Detailed description for clients
    - **Status**: Set to "Active"
 3. Set up pricing for the package according to your business model.
 4. Click **Module** tab to proceed to module settings.
-
-### Module Settings
 
 On the module settings page, configure the following:
 
@@ -66,9 +64,10 @@ On the module settings page, configure the following:
    - **Set Template**: Choose whether admin sets template or client can choose
    - **Template**: Select default operating system template
 
+Click **Create Package** to create the package.
 ### Pricing Considerations
 
-While UpCloud has predefined pricing for resources, you have the flexibility to:
+You have the flexibility to:
 
 - Set custom pricing for different server plans
 - Add surcharges for premium templates (Windows)
