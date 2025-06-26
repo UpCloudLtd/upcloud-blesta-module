@@ -29,7 +29,7 @@ Then proceed with the instructions to [create a token](https://upcloudltd.github
 6. Fill in the following details:
    - **Account Name**: A descriptive name for this UpCloud account (e.g., "UpCloud Production")
    - **API Token**: The API token you generated in the previous step
-8. Click **Add** to save the configuration.
+7. Click **Add** to save the configuration.
 
 ## Configuration
 
@@ -48,12 +48,13 @@ Then proceed with the instructions to [create a token](https://upcloudltd.github
 
 1. Navigate to **Packages** > **Packages**
 2. Click **Create Package** (the `[+]` icon)
-2. Configure the basic package details:
+3. Configure the basic package details:
    - **Name**: Provide a descriptive package name (e.g., "UpCloud VPS - 2GB RAM")
    - **Description**: Detailed description for clients
    - **Status**: Set to "Active"
-3. Set up pricing for the package according to your business model.
-4. Click **Module** tab to proceed to module settings.
+4. Set up pricing for the package according to your business model.
+4. In the **Group Membership** section, make the package a member of the package group created earlier.
+5. Click **Module** tab to proceed to module settings.
 
 On the module settings page, configure the following:
 
