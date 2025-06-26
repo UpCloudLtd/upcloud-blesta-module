@@ -53,8 +53,8 @@ Then proceed with the instructions to [create a token](https://upcloudltd.github
    - **Description**: Detailed description for clients
    - **Status**: Set to "Active"
 4. Set up pricing for the package according to your business model.
-4. In the **Group Membership** section, make the package a member of the package group created earlier.
-5. Click **Module** tab to proceed to module settings.
+5. In the **Group Membership** section, make the package a member of the package group created earlier.
+6. Click **Module** tab to proceed to module settings.
 
 On the module settings page, configure the following:
 
@@ -66,6 +66,7 @@ On the module settings page, configure the following:
    - **Template**: Select default operating system template
 
 Click **Create Package** to create the package.
+
 ### Pricing Considerations
 
 You have the flexibility to:
