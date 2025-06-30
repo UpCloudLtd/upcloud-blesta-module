@@ -243,6 +243,7 @@ class UpcloudvpsApi
      *  - title (string) The server title (hostname)
      *  - plan (string) The plan name
      *  - template (string) The template UUID
+     *  - ssh_public_key (string) The SSH public key (optional)
      * @return array The API response
      */
     public function CreateServer($params)
@@ -287,6 +288,16 @@ class UpcloudvpsApi
                 ]
             ]
         ];
+
+        // Add SSH key if provided
+        if (!empty($params['ssh_public_key'])) {
+            $postData['server']['login_user'] = [
+                'ssh_keys' => [
+                    'ssh_key' => [$params['ssh_public_key']]
+                ]
+            ];
+        }
+
         return $this->post('server', $postData);
     }
 

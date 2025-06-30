@@ -56,6 +56,8 @@ $lang['Upcloudvps.!error.module_row.missing'] = 'An internal error occurred. The
 $lang['Upcloudvps.!error.upcloudvps_hostname.format'] = 'Please enter a valid hostname, e.g. domain.com.';
 $lang['Upcloudvps.!error.upcloudvps_location.valid'] = 'Please select a valid location.';
 $lang['Upcloudvps.!error.upcloudvps_template.valid'] = 'Please select a valid template.';
+$lang['Upcloudvps.!error.upcloudvps_ssh_public_key.valid'] = 'Please enter a valid SSH public key.';
+$lang['Upcloudvps.!error.upcloudvps_ssh_public_key.required_for_template'] = 'SSH public key is required for this package.';
 $lang['Upcloudvps.!error.upcloudvps_vmid.valid'] = 'Please provide a valid vm id.';
 $lang['Upcloudvps.!error.api.internal'] = 'An internal error occurred, or the server did not respond to the request.';
 $lang['Upcloudvps.!error.api.server_locked'] = 'Unable to complete action.  Server is currently locked.';
@@ -79,6 +81,7 @@ $lang['Upcloudvps.service_field.template'] = 'Template';
 $lang['Upcloudvps.service_field.ipv6'] = 'IPv6 Networking';
 $lang['Upcloudvps.service_field.enable_vnc'] = 'Enable VNC';
 $lang['Upcloudvps.service_field.disable_vnc'] = 'Disable VNC';
+$lang['Upcloudvps.service_field.ssh_public_key'] = 'SSH Public Key';
 
 // Tooltips
 $lang['Upcloudvps.service_field.tooltip.vmid'] = 'The unique identifier for this subscription.';

@@ -599,7 +599,8 @@ class Upcloud extends Module
             'zone' => $vars['upcloudvps_location'] ?? null,
             'plan' => $package->meta->server_plan,
             'template' => $osid,
-            'title' => isset($vars['upcloudvps_hostname']) ? strtolower($vars['upcloudvps_hostname']) : null
+            'title' => isset($vars['upcloudvps_hostname']) ? strtolower($vars['upcloudvps_hostname']) : null,
+            'ssh_public_key' => $vars['upcloudvps_ssh_public_key'] ?? null
         ];
         return $fields;
     }
@@ -652,7 +653,25 @@ class Upcloud extends Module
                     'rule' => [[$this, 'validateTemplate']],
                     'message' => Language::_('Upcloudvps.!error.upcloudvps_template.valid', true)
                 ]
-            ]
+            ],
+            'upcloudvps_ssh_public_key' => [
+                'valid' => [
+                    'rule' => function($value) {
+                        if (empty($value)) {
+                            return true;
+                        }
+                        return preg_match('/^(ssh-(rsa|dss|ed25519)|ecdsa-sha2-nistp(256|384|521)|sk-(ssh-ed25519|ecdsa-sha2-nistp256)@openssh\.com)\s+AAAA[0-9A-Za-z+\/]+[=]{0,3}(\s+.+)?$/', $value);
+                    },
+                    'message' => Language::_('Upcloudvps.!error.upcloudvps_ssh_public_key.valid', true)
+                ],
+                'required_for_template' => [
+                    'rule' => [
+                        [$this, 'validateSshPublicKeyForTemplate'],
+                        $package->meta->template,
+                    ],
+                    'message' => Language::_('Upcloudvps.!error.upcloudvps_ssh_public_key.required_for_template', true)
+                ]
+            ],
         ];
 
         return $rules;
@@ -706,6 +725,33 @@ class Upcloud extends Module
         return array_key_exists(trim($template), $valid_templates);
     }
 
+    /**
+     * Validates if a SSH public key is valid for the given template.
+     *
+     * @param string $key The SSH public key to validate
+     * @param string $template The template UUID in whose context to validate
+     * @return bool True if the SSH key is valid for the template, false otherwise
+     */
+    public function validateSshPublicKeyForTemplate($key, $template)
+    {
+        $module_row = null;
+        $rows = $this->getModuleRows();
+        if (isset($rows[0])) {
+            $module_row = $rows[0];
+        }
+        unset($rows);
+        $api = $this->getApi($module_row->meta->api_token, $module_row->meta->api_base_url);
+        $templates = $api->GetTemplate();
+        foreach ($templates['response']['storages']['storage'] as $tmpl) {
+            if ($tmpl['uuid'] === $template) {
+                if (isset($tmpl['template_type']) && $tmpl['template_type'] === 'cloud-init') {
+                    return !empty($key);
+                }
+                break;
+            }
+        }
+        return true;
+    }
 
     /**
      * Adds a new service. Creates the server via the API if 'use_module' is true.
@@ -778,6 +824,11 @@ class Upcloud extends Module
             [
                 'key' => 'upcloudvps_location',
                 'value' => $vars['upcloudvps_location'] ?? null,
+                'encrypted' => 0
+            ],
+            [
+                'key' => 'upcloudvps_ssh_public_key',
+                'value' => $vars['upcloudvps_ssh_public_key'] ?? null,
                 'encrypted' => 0
             ],
             [
@@ -918,6 +969,16 @@ class Upcloud extends Module
         );
         $fields->setField($hostname);
 
+        $ssh_public_key = $fields->label(Language::_('Upcloudvps.service_field.ssh_public_key', true), 'upcloudvps_ssh_public_key');
+        $ssh_public_key->attach(
+            $fields->fieldText(
+                'upcloudvps_ssh_public_key',
+                ($vars->upcloudvps_ssh_public_key ?? ($vars->upcloudvps_ssh_public_key ?? null)),
+                ['id' => 'upcloudvps_ssh_public_key']
+            )
+        );
+        $fields->setField($ssh_public_key);
+
         // Set the server location as a selectable option
         $location = $fields->label(Language::_('Upcloudvps.service_field.location', true), 'upcloudvps_location');
         $location->attach(
@@ -1016,6 +1077,16 @@ class Upcloud extends Module
             )
         );
         $fields->setField($hostname);
+
+        $ssh_public_key = $fields->label(Language::_('Upcloudvps.service_field.ssh_public_key', true), 'upcloudvps_ssh_public_key');
+        $ssh_public_key->attach(
+            $fields->fieldText(
+                'upcloudvps_ssh_public_key',
+                ($vars->upcloudvps_ssh_public_key ?? ($vars->upcloudvps_ssh_public_key ?? null)),
+                ['id' => 'upcloudvps_ssh_public_key']
+            )
+        );
+        $fields->setField($ssh_public_key);
 
         // Set the server location as a selectable option
         $location = $fields->label(Language::_('Upcloudvps.service_field.location', true), 'upcloudvps_location');
