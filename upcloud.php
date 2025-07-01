@@ -174,7 +174,7 @@ class Upcloud extends Module
     {
         try {
             $api = $this->getApi($api_token, $api_base_url);
-            $result = $api->GetAccountInfo();
+            $result = $api->getAccountInfo();
             $this->log('upcloud|accountRequest', serialize($result), 'input', true);
             if ($result['response_code'] == '200') {
                 return true;
@@ -185,11 +185,11 @@ class Upcloud extends Module
     }
 
     /**
-     * Initializes and returns an instance of the UpcloudvpsApi.
+     * Initializes and returns an instance of the UpcloudVpsApi.
      *
      * @param string $api_token The UpCloud API token
      * @param string $api_base_url The UpCloud API base URL (optional)
-     * @return UpcloudvpsApi An instance of the UpCloud API wrapper
+     * @return UpcloudVpsApi An instance of the UpCloud API wrapper
      */
     private function getApi($api_token, $api_base_url = null)
     {
@@ -212,7 +212,7 @@ class Upcloud extends Module
             'blestaVer' => $blestaVer,
             'moduleVer' => $this->config->version,
         ];
-        $api = new UpcloudvpsApi($params);
+        $api = new UpcloudVpsApi($params);
         return $api;
     }
 
@@ -225,8 +225,8 @@ class Upcloud extends Module
     private function getServerPlans($module_row)
     {
         $api = $this->getApi($module_row->meta->api_token, $module_row->meta->api_base_url);
-        $result = $api->Getplans()['response']['plans']['plan'];
-        //$this->log('upcloud|Getplans', serialize($result), 'input', true);
+        $result = $api->getPlans()['response']['plans']['plan'];
+        //$this->log('upcloud|getPlans', serialize($result), 'input', true);
         $Vmplans = [];
         foreach ($result as $plan) {
             $PlanDesc = Language::_('Upcloudvps.package.cpu', true) . ': ' . $plan['core_number'] . ' ' . Language::_('Upcloudvps.package.cpu', true) . ' / ' . Language::_('Upcloudvps.package.memory', true) . ': '
@@ -247,8 +247,8 @@ class Upcloud extends Module
     private function getTemplates($module_row, $package = null)
     {
         $api = $this->getApi($module_row->meta->api_token, $module_row->meta->api_base_url);
-        $result_os = $api->GetTemplate()['response']['storages']['storage'];
-        //$this->log('upcloud|GetTemplates', serialize($result_os), 'input', true);
+        $result_os = $api->getTemplate()['response']['storages']['storage'];
+        //$this->log('upcloud|getTemplates', serialize($result_os), 'input', true);
         $templates = [];
         if ($package) {
             foreach ($result_os as $os) {
@@ -275,7 +275,7 @@ class Upcloud extends Module
     private function getLocations($module_row)
     {
         $api = $this->getApi($module_row->meta->api_token, $module_row->meta->api_base_url);
-        $zones = $api->GetZones()['response']['zones']['zone'];
+        $zones = $api->getZones()['response']['zones']['zone'];
         // $this->log('upcloud|getLocations', serialize($zones), 'input', true);
         $zoneLocation = [];
         foreach ($zones as $zone) {
@@ -739,7 +739,7 @@ class Upcloud extends Module
             try {
                 $api = $this->getApi($row->meta->api_token, $row->meta->api_base_url);
                 if (empty($vars['upcloudvps_vmid'])) {
-                    $server = $api->CreateServer($params);
+                    $server = $api->createServer($params);
                     $this->log('upcloud', serialize($server), 'output', true);
                     if ($server['response_code'] != '202') {
                         $this->Input->setErrors(
@@ -1060,7 +1060,7 @@ class Upcloud extends Module
         $row = $this->getModuleRow();
         $service_fields = $this->serviceFieldsToObject($service->fields);
         $api = $this->getApi($row->meta->api_token, $row->meta->api_base_url);
-        $response = $api->GetServer($service_fields->upcloudvps_vmid)['response']['server'];
+        $response = $api->getServer($service_fields->upcloudvps_vmid)['response']['server'];
         $server_details = $response ?? (object) [];
         $this->view = new View($client ? 'client_service_info' : 'admin_service_info', 'default');
         $this->view->base_uri = $this->base_uri;
@@ -1076,7 +1076,7 @@ class Upcloud extends Module
             }
         }
 
-        $zones = $api->GetZones()['response']['zones']['zone'];
+        $zones = $api->getZones()['response']['zones']['zone'];
 
         foreach ($zones as $zone) {
             if ($zone['id'] == $server_details['zone']) {
@@ -1205,26 +1205,26 @@ class Upcloud extends Module
         $service_fields = $this->serviceFieldsToObject($service->fields);
         $templates = $this->getTemplates($row, $package);
         $api = $this->getApi($row->meta->api_token, $row->meta->api_base_url);
-        //  $this->log('upcloud|GetVMInformation', serialize($service_fields), 'input', true);
+        //  $this->log('upcloud|getTabActions', serialize($service_fields), 'input', true);
         $vmId = $service_fields->upcloudvps_vmid;
-        $server_details = $api->GetServer($vmId)['response']['server'];
+        $server_details = $api->getServer($vmId)['response']['server'];
 
         // Perform actions
         if (!empty($post['action'])) {
             switch ($post['action']) {
                 case 'restart':
-                    $action = $api->RestartServer($vmId)['response'];
+                    $action = $api->restartServer($vmId)['response'];
                     break;
                 case 'change_ptr':
                     if ($post['ip'] && $post['ptr']) {
-                        $action = $api->ModifyIPaddress($vmId, $post['ip'], $post['ptr'])['response'];
+                        $action = $api->modifyIpAddress($vmId, $post['ip'], $post['ptr'])['response'];
                     }
                     break;
                 case 'start':
-                    $action = $api->StartServer($vmId)['response'];
+                    $action = $api->startServer($vmId)['response'];
                     break;
                 case 'stop':
-                    $action = $api->StopServer($vmId)['response'];
+                    $action = $api->stopServer($vmId)['response'];
                     break;
                 case 'enblvnc':
                     $action = $api->vncEnableDisable($vmId, 'yes')['response'];
@@ -1252,7 +1252,7 @@ class Upcloud extends Module
             }
         }
 
-        $zones = $api->GetZones()['response']['zones']['zone'];
+        $zones = $api->getZones()['response']['zones']['zone'];
 
         foreach ($zones as $zone) {
             if ($zone['id'] == $server_details['zone']) {
@@ -1278,11 +1278,11 @@ class Upcloud extends Module
 
         if (!empty($server_details['networking']['interfaces']['interface'])) {
             foreach ($server_details['networking']['interfaces']['interface'] as $key => $ip) {
-                $ReverseDNSValue = $api->GetIPaddress($ip['ip_addresses']['ip_address'][0]['address'])['response'];
+                $ReverseDNSValue = $api->getIpAddress($ip['ip_addresses']['ip_address'][0]['address'])['response'];
                 if (strpos($ReverseDNSValue['ip_address']['ptr_record'], "upcloud") !== false) {
-                    $api->ModifyIPaddress($vmId, $ip['ip_addresses']['ip_address'][0]['address'], "client." . $_SERVER['SERVER_NAME'] . ".host");
+                    $api->modifyIpAddress($vmId, $ip['ip_addresses']['ip_address'][0]['address'], "client." . $_SERVER['SERVER_NAME'] . ".host");
                 }
-                $ReverseDNSValue = $api->GetIPaddress($ip['ip_addresses']['ip_address'][0]['address'])['response'];
+                $ReverseDNSValue = $api->getIpAddress($ip['ip_addresses']['ip_address'][0]['address'])['response'];
                 $server_details['networking']['interfaces']['interface'][$key]['ptr'] = $ReverseDNSValue['ip_address']['ptr_record'];
             }
         }
@@ -1295,10 +1295,10 @@ class Upcloud extends Module
             unset($server_details['remote_access_password']);
         }
 
-        foreach ($api->Getplans()['response']['plans']['plan'] as $Plan) {
+        foreach ($api->getPlans()['response']['plans']['plan'] as $Plan) {
             if ($Plan['name'] == $server_details['plan'] and $Plan['memory_amount'] == $server_details['memory_amount']) {
                 $TotalTraffic = $Plan['public_traffic_out'];
-                $Outgoing = $api->formatSizeBytestoGB($server_details['plan_ipv4_bytes'] + $server_details['plan_ipv6_bytes']);
+                $Outgoing = $api->formatSizeBytestoGb($server_details['plan_ipv4_bytes'] + $server_details['plan_ipv6_bytes']);
                 $Percentage = round((($Outgoing / $TotalTraffic) * 100), 2);
                 $progressClass = 'progress-bar-success';
                 if ($Percentage >= 49 && $Percentage < 70) {
@@ -1370,7 +1370,7 @@ class Upcloud extends Module
             $api = $this->getApi($row->meta->api_token, $row->meta->api_base_url);
             if ($package_from->meta->server_plan != $package_to->meta->server_plan) {
                 $service_fields = $this->serviceFieldsToObject($service->fields);
-                $action = $api->ModifyServer($service_fields->upcloudvps_vmid, $package_to->meta->server_plan);
+                $action = $api->modifyServer($service_fields->upcloudvps_vmid, $package_to->meta->server_plan);
                 if ($action['response']['error']['error_message']) {
                     $this->Input->setErrors(['api' => ['response' => $action['response']['error']['error_message']]]);
                 }
