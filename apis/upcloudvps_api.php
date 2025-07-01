@@ -2,7 +2,7 @@
 
 use Blesta\Core\Util\Common\Traits\Container;
 
-class UpcloudvpsApi
+class UpcloudVpsApi
 {
     use Container;
 
@@ -149,7 +149,7 @@ class UpcloudvpsApi
      *
      * @return array The API response
      */
-    public function GetAccountInfo()
+    public function getAccountInfo()
     {
         return $this->get('account');
     }
@@ -159,7 +159,7 @@ class UpcloudvpsApi
      *
      * @return array The API response
      */
-    public function GetPrices()
+    public function getPrices()
     {
         return $this->get('price');
     }
@@ -169,7 +169,7 @@ class UpcloudvpsApi
      *
      * @return array The API response
      */
-    public function GetZones()
+    public function getZones()
     {
         return $this->get('zone');
     }
@@ -179,7 +179,7 @@ class UpcloudvpsApi
      *
      * @return array The API response
      */
-    public function GetTimezones()
+    public function getTimezones()
     {
         return $this->get('timezone');
     }
@@ -189,7 +189,7 @@ class UpcloudvpsApi
      *
      * @return array The API response
      */
-    public function GetPlans()
+    public function getPlans()
     {
         return $this->get('plan');
     }
@@ -199,7 +199,7 @@ class UpcloudvpsApi
      *
      * @return array The API response
      */
-    public function GetServerConfigurations()
+    public function getServerConfigurations()
     {
         return $this->get('server_size');
     }
@@ -209,7 +209,7 @@ class UpcloudvpsApi
      *
      * @return array The API response
      */
-    public function GetAllServers()
+    public function getAllServers()
     {
         return $this->get('server');
     }
@@ -220,7 +220,7 @@ class UpcloudvpsApi
      * @param string $ServerUUID The UUID of the server
      * @return array The API response
      */
-    public function GetServer($ServerUUID)
+    public function getServer($ServerUUID)
     {
         return $this->get('server/' . rawurlencode($ServerUUID));
     }
@@ -230,7 +230,7 @@ class UpcloudvpsApi
      *
      * @return array The API response
      */
-    public function GetTemplate()
+    public function getTemplate()
     {
         return $this->get('storage/template');
     }
@@ -245,9 +245,9 @@ class UpcloudvpsApi
      *  - template (string) The template UUID
      * @return array The API response
      */
-    public function CreateServer($params)
+    public function createServer($params)
     {
-        $Templates = $this->GetTemplate()['response']['storages']['storage'];
+        $Templates = $this->getTemplate()['response']['storages']['storage'];
         foreach ($Templates as $Template) {
             if ($Template['uuid'] == $params['template']) {
                 $TemplateTitle = $Template['title'];
@@ -255,7 +255,7 @@ class UpcloudvpsApi
                 break;
             }
         }
-        $AllPlans = $this->Getplans()['response']['plans']['plan'];
+        $AllPlans = $this->getPlans()['response']['plans']['plan'];
         foreach ($AllPlans as $Plans) {
             if ($Plans['name'] == $params['plan']) {
                 $PlanName = $Plans['name'];
@@ -271,7 +271,7 @@ class UpcloudvpsApi
                 'zone' => $params['zone'], // GetZones()
                 'title' => $params['title'], // hostname
                 'hostname' => $params['title'], // hostname
-                'plan' => $PlanName, // Getplans()
+                'plan' => $PlanName, // getPlans()
                 //  "simple_backup" => "0430,weeklies",
                 'remote_access_enabled' => 'yes',
                 'storage_devices' => [
@@ -279,8 +279,8 @@ class UpcloudvpsApi
                         [
                             'action' => 'clone',
                             'storage' => $TemplateUUID, // GetTemplates()
-                            'size' => $PlanSize, // storage_size from Getplans()
-                            'tier' => $PlanTier, // storage_tier from Getplans()
+                            'size' => $PlanSize, // storage_size from getPlans()
+                            'tier' => $PlanTier, // storage_tier from getPlans()
                             'title' => $TemplateTitle, // OS Name
                         ]
                     ]
@@ -315,7 +315,7 @@ class UpcloudvpsApi
      * @param string $ServerUUID The UUID of the server
      * @return array The API response
      */
-    public function StartServer($ServerUUID)
+    public function startServer($ServerUUID)
     {
         return $this->serverOperation('start', $ServerUUID);
     }
@@ -326,7 +326,7 @@ class UpcloudvpsApi
      * @param string $ServerUUID The UUID of the server
      * @return array The API response
      */
-    public function StopServer($ServerUUID)
+    public function stopServer($ServerUUID)
     {
         return $this->serverOperation('stop', $ServerUUID, 'hard');
     }
@@ -337,7 +337,7 @@ class UpcloudvpsApi
      * @param string $ServerUUID The UUID of the server
      * @return array The API response
      */
-    public function RestartServer($ServerUUID)
+    public function restartServer($ServerUUID)
     {
         return $this->serverOperation('restart', $ServerUUID, 'hard');
     }
@@ -348,7 +348,7 @@ class UpcloudvpsApi
      * @param string $ServerUUID The UUID of the server
      * @return array The API response
      */
-    public function CancelServer($ServerUUID)
+    public function cancelServer($ServerUUID)
     {
         return $this->serverOperation('cancel', $ServerUUID);
     }
@@ -359,7 +359,7 @@ class UpcloudvpsApi
      * @param string $ServerUUID The UUID of the server
      * @return array The API response
      */
-    public function DeleteServer($ServerUUID)
+    public function deleteServer($ServerUUID)
     {
         return $this->delete('server/' . rawurlencode($ServerUUID));
     }
@@ -372,10 +372,10 @@ class UpcloudvpsApi
      * @param string $Plan The name of the target plan
      * @return array The API response from the final operation (storage resize or plan change)
      */
-    public function ModifyServer($uuid, $Plan)
+    public function modifyServer($uuid, $Plan)
     {
         $this->stopServerAndWait($uuid);
-        $allPlans = $this->Getplans()['response']['plans']['plan'];
+        $allPlans = $this->getPlans()['response']['plans']['plan'];
         foreach ($allPlans as $plan) {
             if ($plan['name'] == $Plan) {
                 $planSize = $plan['storage_size'];
@@ -387,7 +387,7 @@ class UpcloudvpsApi
         if ($upgradePlan['response']['error']['error_message']) {
             return $upgradePlan;
         } else {
-            $storages = $this->GetServer($uuid)['response']['server']['storage_devices']['storage_device'];
+            $storages = $this->getServer($uuid)['response']['server']['storage_devices']['storage_device'];
             foreach ($storages as $storage) {
                 if ($storage['part_of_plan'] == "yes") {
                     $storageId = $storage['storage'];
@@ -397,7 +397,7 @@ class UpcloudvpsApi
             }
             if ($storageId && $planSize > $existingStorageSize) {
                 $modeyStorage = $this->modifyStorage($storageId, $planSize);
-                $this->StartServer($uuid);
+                $this->startServer($uuid);
                 return $modeyStorage;
             }
         }
@@ -428,7 +428,7 @@ class UpcloudvpsApi
      * @param string $ServerUUID The UUID of the server
      * @return array The API response from the delete operation
      */
-    public function DeleteServerAndStorage($ServerUUID)
+    public function deleteServerAndStorage($ServerUUID)
     {
         $this->stopServerAndWait($ServerUUID);
         return $this->delete(sprintf('server/%s?storages=1', rawurlencode($ServerUUID)));
@@ -441,7 +441,7 @@ class UpcloudvpsApi
      * @param string $ServerUUID The UUID of the server
      * @return array The API response from the delete operation
      */
-    public function DeleteServerAndStorageAndBackups($ServerUUID)
+    public function deleteServerAndStorageAndBackups($ServerUUID)
     {
         $this->stopServerAndWait($ServerUUID);
         return $this->delete(sprintf('server/%s?storages=1&backups=delete', rawurlencode($ServerUUID)));
@@ -454,17 +454,17 @@ class UpcloudvpsApi
      */
     public function stopServerAndWait($ServerUUID)
     {
-        $result = $this->GetServer($ServerUUID);
+        $result = $this->getServer($ServerUUID);
         $state = $result['response']['server']['state'];
         if ($state == 'started') {
-            $this->StopServer($ServerUUID);
+            $this->stopServer($ServerUUID);
         }
 
         $times = 0;
         // If VM delete takes time please increase it but when tested working within 45 second
         while ($state != 'stopped' && $times < 45) {
             sleep(2);
-            $result = $this->GetServer($ServerUUID);
+            $result = $this->getServer($ServerUUID);
             $state = $result['response']['server']['state'];
             ++$times;
         }
@@ -480,7 +480,7 @@ class UpcloudvpsApi
      * @param string $IPAddress The IP address
      * @return array The API response
      */
-    public function GetIPaddress($IPAddress)
+    public function getIpAddress($IPAddress)
     {
         return $this->get('ip_address/' . rawurlencode($IPAddress));
     }
@@ -493,9 +493,9 @@ class UpcloudvpsApi
      * @param string $ptr_record The new PTR record value
      * @return array The API response
      */
-    public function ModifyIPaddress($instanceId, $IP, $ptr_record)
+    public function modifyIpAddress($instanceId, $IP, $ptr_record)
     {
-        if (!($this->GetIPaddress($IP)['response']['ip_address']['server'] == $instanceId)) {
+        if (!($this->getIpAddress($IP)['response']['ip_address']['server'] == $instanceId)) {
             $this->logger->error('IP does not belong to your server');
         }
         return $this->put('ip_address/' . rawurlencode($IP), ['ip_address' => ['ptr_record' => $ptr_record]]);
@@ -533,7 +533,7 @@ class UpcloudvpsApi
      * @param array $serverConfig An array containing server settings to modify (e.g., ['title' => 'new_title'])
      * @return array The API response
      */
-    public function modifyVPS($instanceId, $serverConfig)
+    public function modifyVps($instanceId, $serverConfig)
     {
         return $this->put('server/' . rawurlencode($instanceId), $serverConfig);
     }
@@ -544,7 +544,7 @@ class UpcloudvpsApi
      * @param int $bytes The number of bytes
      * @return float The value in GB
      */
-    public function formatSizeBytestoGB($bytes)
+    public function formatSizeBytestoGb($bytes)
     {
         return round($bytes / 1024 / 1024 / 1024, 2);
     }
