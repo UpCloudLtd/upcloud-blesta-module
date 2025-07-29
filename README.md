@@ -1,5 +1,7 @@
 # UpCloud Blesta Module
 
+[![OpenSSF Scorecard](https://api.scorecard.dev/projects/github.com/UpCloudLtd/upcloud-blesta-module/badge)](https://scorecard.dev/viewer/?uri=github.com%2FUpCloudLtd%2Fupcloud-blesta-module)
+
 Enabling hosting providers to offer UpCloud cloud servers through their Blesta billing platform.
 
 ## Overview
