@@ -499,7 +499,7 @@ class Upcloud extends Module
      */
     public function suspendService($package, $service, $parent_package = null, $parent_service = null)
     {
-        return $this->performServiceAction($service, 'StopServer', 'upcloud|suspend');
+        return $this->performServiceAction($service, 'stopServer', 'upcloud|suspend');
     }
 
     /**
@@ -513,7 +513,7 @@ class Upcloud extends Module
      */
     public function unsuspendService($package, $service, $parent_package = null, $parent_service = null)
     {
-        return $this->performServiceAction($service, 'StartServer', 'upcloud|unsuspend');
+        return $this->performServiceAction($service, 'startServer', 'upcloud|unsuspend');
     }
 
     /**
@@ -527,7 +527,7 @@ class Upcloud extends Module
      */
     public function cancelService($package, $service, $parent_package = null, $parent_service = null)
     {
-        return $this->performServiceAction($service, 'DeleteServerAndStorage', 'upcloud|cancel', '204');
+        return $this->performServiceAction($service, 'deleteServerAndStorage', 'upcloud|cancel', '204');
     }
 
     /**
@@ -535,7 +535,7 @@ class Upcloud extends Module
      * Logs the action and sets errors if the API call fails.
      *
      * @param stdClass $service The service object
-     * @param string $actionName The API method name to call (e.g., 'StopServer')
+     * @param string $actionName The API method name to call (e.g., 'stopServer')
      * @param string $logTag The tag to use for logging
      * @param string|null $expectedResponseCode The expected HTTP response code for success (optional)
      * @return null Returns null on completion (errors are set via Input component)
