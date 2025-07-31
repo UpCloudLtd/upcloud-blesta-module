@@ -236,6 +236,17 @@ class UpcloudVpsApi
     }
 
     /**
+     * Gets details for a specific storage.
+     *
+     * @param string $storage_uuid The UUID of the storage
+     * @return array The API response
+     */
+    public function getStorage($storage_uuid)
+    {
+        return $this->get('storage/' . rawurlencode($storage_uuid));
+    }
+
+    /**
      * Creates a new server.
      *
      * @param array $params Server creation parameters including:
@@ -243,6 +254,7 @@ class UpcloudVpsApi
      *  - title (string) The server title (hostname)
      *  - plan (string) The plan name
      *  - template (string) The template UUID
+     *  - ssh_keys (array) Array of SSH public keys to add to the server (optional)
      * @return array The API response
      */
     public function createServer($params)
@@ -287,6 +299,12 @@ class UpcloudVpsApi
                 ]
             ]
         ];
+
+        // Add SSH keys if provided
+        if (!empty($params['ssh_keys']) && is_array($params['ssh_keys'])) {
+            $postData['server']['login_user']['ssh_keys']['ssh_key'] = $params['ssh_keys'];
+        }
+
         return $this->post('server', $postData);
     }
 
