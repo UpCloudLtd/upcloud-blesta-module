@@ -601,6 +601,23 @@ class Upcloud extends Module
             'template' => $osid,
             'title' => isset($vars['upcloudvps_hostname']) ? strtolower($vars['upcloudvps_hostname']) : null
         ];
+
+        // Add SSH keys if provided
+        if (!empty($vars['upcloudvps_ssh_keys'])) {
+            $ssh_keys = [];
+            // Handle both single key and multiple keys (comma-separated or array)
+            if (is_array($vars['upcloudvps_ssh_keys'])) {
+                $ssh_keys = array_filter(array_map('trim', $vars['upcloudvps_ssh_keys']));
+            } else {
+                // Split and clean up
+                $keys = preg_split('/[,\r\n]+/', $vars['upcloudvps_ssh_keys'], -1, PREG_SPLIT_NO_EMPTY);
+                $ssh_keys = array_filter(array_map('trim', $keys));
+            }
+            if (!empty($ssh_keys)) {
+                $fields['ssh_keys'] = $ssh_keys;
+            }
+        }
+
         return $fields;
     }
 
@@ -651,6 +668,22 @@ class Upcloud extends Module
                     'if_set' => $edit,
                     'rule' => [[$this, 'validateTemplate']],
                     'message' => Language::_('Upcloudvps.!error.upcloudvps_template.valid', true)
+                ]
+            ],
+            'upcloudvps_ssh_keys' => [
+                'required' => [
+                    'if_set' => $edit,
+                    'rule' => [
+                        [$this, 'validateSshKeysRequired'],
+                        $package,
+                        $vars['upcloudvps_template'] ?? null,
+                    ],
+                    'message' => Language::_('Upcloudvps.!error.upcloudvps_ssh_keys.required', true)
+                ],
+                'valid' => [
+                    'if_set' => $edit,
+                    'rule' => [[$this, 'validateSshKeys']],
+                    'message' => Language::_('Upcloudvps.!error.upcloudvps_ssh_keys.valid', true)
                 ]
             ]
         ];
@@ -704,6 +737,54 @@ class Upcloud extends Module
         unset($rows);
         $valid_templates = $this->getTemplates($module_row);
         return array_key_exists(trim($template), $valid_templates);
+    }
+
+    /**
+     * Validates SSH keys' requiredness with the given package and template.
+     *
+     * @param string $ssh_keys The SSH keys set
+     * @param stdClass $package The package to validate with
+     * @param string $template_uuid The template UUID to validate with (ignored if admin-set)
+     */
+    public function validateSshKeysRequired($ssh_keys, $package, $template_uuid)
+    {
+        if (!empty($ssh_keys)) {
+            return true;
+        }
+
+        $module_row = null;
+        $rows = $this->getModuleRows();
+        if (isset($rows[0])) {
+            $module_row = $rows[0];
+        }
+        unset($rows);
+
+        $api = $this->getApi($module_row->meta->api_token, $module_row->meta->api_base_url);
+        if ($package->meta->set_template !== 'client') {
+            $template_uuid = $package->meta->template;
+        }
+        $template = $api->getStorage($template_uuid)['response']['storage'];
+
+        if ($template['type'] == 'template' && $template['template_type'] == 'cloud-init') {
+            return false;
+        }
+        return true;
+    }
+
+    /**
+     * Validates SSH public keys.
+     *
+     * @param string $ssh_keys The SSH public keys to validate
+     * @return bool True if the SSH key is valid, false otherwise
+     */
+    public function validateSshKeys($ssh_keys)
+    {
+        foreach (preg_split('/[,\r\n]+/', $ssh_keys, -1, PREG_SPLIT_NO_EMPTY) as $ssh_key) {
+            if (!preg_match('/^(ssh-(rsa|dss|ed25519)|ecdsa-sha2-nistp(256|384|521)|sk-(ssh-ed25519|ecdsa-sha2-nistp256)@openssh\.com) AAAA[0-9A-Za-z+\/]+={0,3}( .*)?$/', $ssh_key)) {
+                return false;
+            }
+        }
+        return true;
     }
 
 
@@ -778,6 +859,11 @@ class Upcloud extends Module
             [
                 'key' => 'upcloudvps_location',
                 'value' => $vars['upcloudvps_location'] ?? null,
+                'encrypted' => 0
+            ],
+            [
+                'key' => 'upcloudvps_ssh_keys',
+                'value' => $vars['upcloudvps_ssh_keys'] ?? null,
                 'encrypted' => 0
             ],
             [
@@ -865,6 +951,7 @@ class Upcloud extends Module
         $fields = [
             'upcloudvps_vmid',
             'upcloudvps_template',
+            'upcloudvps_ssh_keys',
         ];
         foreach ($fields as $field) {
             if (property_exists($service_fields, $field) && isset($vars[$field])) {
@@ -944,6 +1031,19 @@ class Upcloud extends Module
             $fields->setField($template);
         }
 
+        // Add SSH keys field
+        $ssh_keys = $fields->label(Language::_('Upcloudvps.service_field.ssh_keys', true), 'upcloudvps_ssh_keys');
+        $ssh_keys->attach(
+            $fields->fieldTextarea(
+                'upcloudvps_ssh_keys',
+                $vars->upcloudvps_ssh_keys ?? null,
+                ['id' => 'upcloudvps_ssh_keys', 'rows' => 4, 'placeholder' => 'ssh-rsa AAAAB3NzaC1yc2E...']
+            )
+        );
+        $ssh_keys_tooltip = $fields->tooltip(Language::_('Upcloudvps.service_field.tooltip.ssh_keys', true));
+        $ssh_keys->attach($ssh_keys_tooltip);
+        $fields->setField($ssh_keys);
+
         return $fields;
     }
 
@@ -987,6 +1087,19 @@ class Upcloud extends Module
             );
             $fields->setField($template);
         }
+
+        // Add SSH keys field
+        $ssh_keys = $fields->label(Language::_('Upcloudvps.service_field.ssh_keys', true), 'upcloudvps_ssh_keys');
+        $ssh_keys->attach(
+            $fields->fieldTextarea(
+                'upcloudvps_ssh_keys',
+                $vars->upcloudvps_ssh_keys ?? null,
+                ['id' => 'upcloudvps_ssh_keys', 'rows' => 4, 'placeholder' => 'ssh-rsa AAAAB3NzaC1yc2E...']
+            )
+        );
+        $ssh_keys_tooltip = $fields->tooltip(Language::_('Upcloudvps.service_field.tooltip.ssh_keys', true));
+        $ssh_keys->attach($ssh_keys_tooltip);
+        $fields->setField($ssh_keys);
 
         return $fields;
     }
@@ -1042,6 +1155,19 @@ class Upcloud extends Module
             );
             $fields->setField($template);
         }
+
+        // Add SSH keys field
+        $ssh_keys = $fields->label(Language::_('Upcloudvps.service_field.ssh_keys', true), 'upcloudvps_ssh_keys');
+        $ssh_keys->attach(
+            $fields->fieldTextarea(
+                'upcloudvps_ssh_keys',
+                $vars->upcloudvps_ssh_keys ?? null,
+                ['id' => 'upcloudvps_ssh_keys', 'rows' => 4, 'placeholder' => 'ssh-rsa AAAAB3NzaC1yc2E...']
+            )
+        );
+        $ssh_keys_tooltip = $fields->tooltip(Language::_('Upcloudvps.service_field.tooltip.ssh_keys', true));
+        $ssh_keys->attach($ssh_keys_tooltip);
+        $fields->setField($ssh_keys);
 
         return $fields;
     }
