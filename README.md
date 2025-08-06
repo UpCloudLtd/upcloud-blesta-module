@@ -16,7 +16,7 @@ The UpCloud Blesta Module provides seamless integration between Blesta billing s
 
 ## Installation & configuration
 
-For comprehensive installation instructions, see [INSTALL.md](INSTALL.md).
+For comprehensive installation instructions, see [docs/INSTALL.md](docs/INSTALL.md).
 
 ## Contributing
 
