@@ -1,4 +1,4 @@
-min_version: 1.10.10
+min_version: 1.11.13
 
 pre-commit:
   jobs:
